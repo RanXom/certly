@@ -1,15 +1,46 @@
+import { fabric } from "fabric";
 import { useCallback } from "react";
 
 export const useEditor = () => {
-    const init = useCallback(({
-        initialCanvas, 
-        initialContainer
+  const init = useCallback(
+    ({
+      initialCanvas,
+      initialContainer,
     }: {
-        initialCanvas: any,
-        initialContainer: HTMLDivElement,
+      initialCanvas: fabric.Canvas;
+      initialContainer: HTMLDivElement;
     }) => {
-        console.log("Init Editor...");
-    }, []);
+      const initialWorkspace = new fabric.Rect({
+        width: 900,
+        height: 1200,
+        name: "clip",
+        fill: "white",
+        selectable: false,
+        hasControls: false,
+        shadow: new fabric.Shadow({
+          color: "rgba(0,0,0,0.8)",
+          blur: 5,
+        }),
+      });
 
-    return { init };
+      initialCanvas.setWidth(initialContainer.offsetWidth);
+      initialCanvas.setHeight(initialContainer.offsetHeight);
+
+      initialCanvas.add(initialWorkspace);
+      initialCanvas.centerObject(initialWorkspace);
+      initialCanvas.clipPath = initialWorkspace;
+
+      const testRect = new fabric.Rect({
+        height: 100,
+        width: 100,
+        fill: "black",
+      });
+
+      initialCanvas.add(testRect);
+      initialCanvas.centerObject(testRect);
+    },
+    [],
+  );
+
+  return { init };
 };
