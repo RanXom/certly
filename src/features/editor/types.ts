@@ -28,10 +28,36 @@ export const CIRCLE_OPTIONS = {
   strokeWidth: STROKE_WIDTH,
 };
 
+export const RECTANGLE_OPTIONS = {
+  left: 100,
+  top: 100,
+  fill: FILL_COLOR,
+  stroke: STROKE_COLOR,
+  strokeWidth: STROKE_WIDTH,
+  width: 400,
+  height: 400,
+  angle: 0
+};
+
+export const TRIANGLE_OPTONS = {
+  left: 100,
+  top: 100,
+  fill: FILL_COLOR,
+  stroke: STROKE_COLOR,
+  strokeWidth: STROKE_WIDTH,
+  width: 400,
+  height: 400,
+  angle: 0
+};
+
 export type BuildEditorProps = {
   canvas: fabric.Canvas;
 };
 
 export interface Editor {
   addCircle: () => void;
+  addSoftRectangle: () => void;
+  addRectangle: () => void;
+  addTriangle: () => void;
+  addInverseTriangle: () => void;
 }

@@ -5,6 +5,8 @@ import {
   BuildEditorProps,
   CIRCLE_OPTIONS,
   Editor,
+  RECTANGLE_OPTIONS,
+  TRIANGLE_OPTONS,
 } from "@/features/editor/types";
 import { useAutoResize } from "@/features/editor/hooks/use-auto-resize";
 
@@ -25,15 +27,54 @@ const buildEditor = ({ canvas }: BuildEditorProps): Editor => {
     canvas._centerObject(object, center);
   };
 
+  const addToCanvas = (object: fabric.Object) => {
+      center(object);
+      canvas.add(object);
+      canvas.setActiveObject(object);
+  };
+
   return {
     addCircle: () => {
       const object = new fabric.Circle({
         ...CIRCLE_OPTIONS,
       });
 
-      center(object);
-      canvas.add(object);
-      canvas.setActiveObject(object);
+      addToCanvas(object);
+    },
+
+    addSoftRectangle: () => {
+      const object = new fabric.Rect({
+        ...RECTANGLE_OPTIONS,
+        rx:25,
+        ry:25,
+      });
+
+      addToCanvas(object);
+    },
+
+    addRectangle: () => {
+      const object = new fabric.Rect({
+        ...RECTANGLE_OPTIONS,
+      });
+
+      addToCanvas(object);
+    },
+
+    addTriangle: () => {
+      const object = new fabric.Triangle({
+        ...TRIANGLE_OPTONS,
+      });
+
+      addToCanvas(object);
+    },
+
+    addInverseTriangle: () => {
+      const object = new fabric.Triangle({
+        ...TRIANGLE_OPTONS,
+        angle: 180,
+      });
+
+      addToCanvas(object);
     },
   };
 };
