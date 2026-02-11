@@ -9,41 +9,51 @@ import {
   Shapes,
   Type,
 } from "lucide-react";
-import { SidebarItem } from "./sidebar-items";
 
-export const Sidebar = () => {
+import { SidebarItem } from "./sidebar-items";
+import { ActiveTool } from "../types";
+
+interface SidebarProps {
+  activeTool: ActiveTool;
+  onChangeActiveTool: (tool: ActiveTool) => void;
+};
+
+export const Sidebar = ({
+  activeTool,
+  onChangeActiveTool
+}: SidebarProps) => {
   return (
     <aside className="bg-white flex flex-col w-[100px] h-full border-r overflow-y-auto">
       <ul className="flex flex-col">
         <SidebarItem
           icon={LayoutTemplate}
           label="Design"
-          isActive={false}
-          onClick={() => {}} //TODO
+          isActive={activeTool === "templates"}
+          onClick={() => onChangeActiveTool("templates")} 
         />
         <SidebarItem
           icon={ImageIcon}
           label="Image"
-          isActive={false}
-          onClick={() => {}} //TODO
+          isActive={activeTool === "image"}
+          onClick={() => onChangeActiveTool("image")}
         />
         <SidebarItem
           icon={Type}
           label="Text"
-          isActive={false}
-          onClick={() => {}} //TODO
+          isActive={activeTool === "text"}
+          onClick={() => onChangeActiveTool("text")}
         />
         <SidebarItem
           icon={Shapes}
           label="Shapes"
-          isActive={false}
-          onClick={() => {}} //TODO
+          isActive={activeTool === "shapes"}
+          onClick={() => onChangeActiveTool("shapes")} 
         />
         <SidebarItem
           icon={Settings}
           label="Settings"
-          isActive={false}
-          onClick={() => {}} //TODO
+          isActive={activeTool === "settings"}
+          onClick={() => onChangeActiveTool("settings")} 
         />
       </ul>
     </aside>
