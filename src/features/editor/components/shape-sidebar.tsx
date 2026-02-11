@@ -48,7 +48,7 @@ export const ShapeSidebar = ({
             icon={IoTriangle}
             iconClassName="rotate-180"
           />
-          <ShapeTool onClick={() => {}} icon={FaDiamond} />
+          <ShapeTool onClick={() => editor?.addDiamond()} icon={FaDiamond} />
         </div>
       </ScrollArea>
       <ToolSidebarClose onClick={onClose} />

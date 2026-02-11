@@ -4,6 +4,7 @@ import { useCallback, useMemo, useState } from "react";
 import {
   BuildEditorProps,
   CIRCLE_OPTIONS,
+  DIAMOND_OPTIONS,
   Editor,
   RECTANGLE_OPTIONS,
   TRIANGLE_OPTONS,
@@ -69,8 +70,8 @@ const buildEditor = ({ canvas }: BuildEditorProps): Editor => {
     },
 
     addInverseTriangle: () => {
-      const HEIGHT = 400;
-      const WIDTH = 400;
+      const HEIGHT = TRIANGLE_OPTONS.height;
+      const WIDTH = TRIANGLE_OPTONS.width;
 
       const object = new fabric.Polygon([
         { x: 0, y: 0 },
@@ -84,6 +85,25 @@ const buildEditor = ({ canvas }: BuildEditorProps): Editor => {
 
       addToCanvas(object);
     },
+
+    addDiamond: () => {
+      const HEIGHT = DIAMOND_OPTIONS.height;
+      const WIDTH = DIAMOND_OPTIONS.width;
+
+      const object = new fabric.Polygon([
+        { x: HEIGHT / 2, y: 0 },
+        { x: WIDTH, y: HEIGHT / 2 },
+        { x: WIDTH / 2, y: HEIGHT },
+        { x: 0, y: HEIGHT / 2 }
+      ],
+      {
+        ...DIAMOND_OPTIONS,
+      }
+    );
+
+      addToCanvas(object);
+    },
+ 
   };
 };
 
