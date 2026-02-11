@@ -12,11 +12,13 @@ import { cn } from "@/lib/utils";
 import { ScrollArea } from "@/components/ui/scroll-area";
 
 interface ShapeSidebarProps {
+  editor: any; // TODO: Change type
   activeTool: ActiveTool;
   onChangeActiveTool: (tool: ActiveTool) => void;
 }
 
 export const ShapeSidebar = ({
+  editor,
   activeTool,
   onChangeActiveTool,
 }: ShapeSidebarProps) => {
@@ -37,7 +39,7 @@ export const ShapeSidebar = ({
       />
       <ScrollArea>
         <div className="grid grid-cols-3 gap-4 p-4">
-          <ShapeTool onClick={() => {}} icon={FaCircle} />
+          <ShapeTool onClick={() => editor?.addCircle()} icon={FaCircle} />
           <ShapeTool onClick={() => {}} icon={FaSquare} />
           <ShapeTool onClick={() => {}} icon={FaSquareFull} />
           <ShapeTool onClick={() => {}} icon={IoTriangle} />
