@@ -1,7 +1,13 @@
 "use client";
 
 import { CiFileOn } from "react-icons/ci";
-import { ChevronDown, MousePointerClick, Undo2, Redo2 } from "lucide-react";
+import {
+  ChevronDown,
+  MousePointerClick,
+  Undo2,
+  Redo2,
+  Download,
+} from "lucide-react";
 
 import { Logo } from "@/features/editor/components/logo";
 
@@ -14,6 +20,7 @@ import {
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
 import { Separator } from "@/components/ui/separator";
+import { BsCloudCheck } from "react-icons/bs";
 
 export const Navbar = () => {
   return (
@@ -73,7 +80,71 @@ export const Navbar = () => {
             <Redo2 className="size-4" />
           </Button>
         </Hint>
-        <Separator orientation="vertical" className="max-2" />
+        <Separator orientation="vertical" className="mx-2" />
+        <div className="flex items-center gap-x-2">
+          <BsCloudCheck className="size-[20px] text-muted-foreground" />
+          <div className="text-xs text-muted-foreground">Saved</div>
+        </div>
+        <div className="ml-auto flex items-center gap-x-4">
+          <DropdownMenu modal={false}>
+            <DropdownMenuTrigger asChild>
+              <Button size="sm" variant="ghost">
+                Export
+                <Download className="size-4 ml-4" />
+              </Button>
+            </DropdownMenuTrigger>
+            <DropdownMenuContent align="end" className="min-w-60">
+              <DropdownMenuItem
+                onClick={() => {}} // TODO: Add functionality
+                className="flex items-center gap-x-2"
+              >
+                <CiFileOn className="size-8" />
+                <div>
+                  <p>JSON</p>
+                  <p className="text-xs text-muted-foreground">
+                    Save for later
+                  </p>
+                </div>
+              </DropdownMenuItem>
+              <DropdownMenuItem
+                onClick={() => {}} // TODO: Add functionality
+                className="flex items-center gap-x-2"
+              >
+                <CiFileOn className="size-8" />
+                <div>
+                  <p>PNG</p>
+                  <p className="text-xs text-muted-foreground">
+                    Best for sharing on the web
+                  </p>
+                </div>
+              </DropdownMenuItem>
+              <DropdownMenuItem
+                onClick={() => {}} // TODO: Add functionality
+                className="flex items-center gap-x-2"
+              >
+                <CiFileOn className="size-8" />
+                <div>
+                  <p>JPG</p>
+                  <p className="text-xs text-muted-foreground">
+                    Best for printing
+                  </p>
+                </div>
+              </DropdownMenuItem>
+              <DropdownMenuItem
+                onClick={() => {}} // TODO: Add functionality
+                className="flex items-center gap-x-2"
+              >
+                <CiFileOn className="size-8" />
+                <div>
+                  <p>SVG</p>
+                  <p className="text-xs text-muted-foreground">
+                    Best for editing softwares
+                  </p>
+                </div>
+              </DropdownMenuItem>
+            </DropdownMenuContent>
+          </DropdownMenu>
+        </div>
       </div>
     </nav>
   );
