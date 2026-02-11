@@ -1,12 +1,12 @@
 import { fabric } from "fabric";
 import { useCallback, useMemo, useState } from "react";
 
-import { BuildEditorProps } from "@/features/editor/types";
+import { BuildEditorProps, Editor } from "@/features/editor/types";
 import { useAutoResize } from "@/features/editor/hooks/use-auto-resize";
 
 const  buildEditor = ({
   canvas,
-}: BuildEditorProps) => {
+}: BuildEditorProps): Editor => {
   return {
     addCircle: () => {
       const object = new fabric.Circle({

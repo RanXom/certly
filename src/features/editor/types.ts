@@ -18,3 +18,7 @@ export type ActiveTool =
 export type BuildEditorProps = {
     canvas: fabric.Canvas;
 };
+
+export interface Editor {
+    addCircle: () => void;
+};
