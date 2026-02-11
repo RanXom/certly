@@ -9,12 +9,29 @@ import {
 import { useAutoResize } from "@/features/editor/hooks/use-auto-resize";
 
 const buildEditor = ({ canvas }: BuildEditorProps): Editor => {
+  const getWorkspace = () => {
+    return canvas
+      .getObjects()
+      .find((object) => object.name === "clip");
+  };
+
+  const center = (object: fabric.Object) => {
+    const workspace = getWorkspace();
+    const center = workspace?.getCenterPoint();
+
+    if(!center) return;
+
+    // @ts-ignore
+    canvas._centerObject(object, center);
+  };
+
   return {
     addCircle: () => {
       const object = new fabric.Circle({
         ...CIRCLE_OPTIONS,
       });
 
+      center(object);
       canvas.add(object);
       canvas.setActiveObject(object);
     },
@@ -77,15 +94,6 @@ export const useEditor = () => {
 
       setCanvas(initialCanvas);
       setContainer(initialContainer);
-
-      const testRect = new fabric.Rect({
-        height: 100,
-        width: 100,
-        fill: "black",
-      });
-
-      initialCanvas.add(testRect);
-      initialCanvas.centerObject(testRect);
     },
     [],
   );
