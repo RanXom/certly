@@ -13,14 +13,21 @@ import { Logo } from "@/features/editor/components/logo";
 
 import { Hint } from "@/components/hint";
 import { Button } from "@/components/ui/button";
+
 import {
   DropdownMenu,
   DropdownMenuItem,
   DropdownMenuContent,
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
+
 import { Separator } from "@/components/ui/separator";
 import { BsCloudCheck } from "react-icons/bs";
+import { ActiveTool } from "@/features/editor/types";
+
+interface NavbarProps {
+  activeTool: ActiveTool;
+};
 
 export const Navbar = () => {
   return (

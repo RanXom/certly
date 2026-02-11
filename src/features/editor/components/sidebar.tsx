@@ -10,8 +10,8 @@ import {
   Type,
 } from "lucide-react";
 
-import { SidebarItem } from "./sidebar-items";
-import { ActiveTool } from "../types";
+import { SidebarItem } from "@/features/editor/components/sidebar-items";
+import { ActiveTool } from "@/features/editor/types";
 
 interface SidebarProps {
   activeTool: ActiveTool;

@@ -1,7 +1,7 @@
 import { fabric } from "fabric";
 import { useCallback, useState } from "react";
 
-import { useAutoResize } from "./use-auto-resize";
+import { useAutoResize } from "@/features/editor/hooks/use-auto-resize";
 
 export const useEditor = () => {
   const [canvas, setCanvas] = useState<fabric.Canvas | null>(null);
