@@ -16,12 +16,9 @@ import { ActiveTool } from "@/features/editor/types";
 interface SidebarProps {
   activeTool: ActiveTool;
   onChangeActiveTool: (tool: ActiveTool) => void;
-};
+}
 
-export const Sidebar = ({
-  activeTool,
-  onChangeActiveTool
-}: SidebarProps) => {
+export const Sidebar = ({ activeTool, onChangeActiveTool }: SidebarProps) => {
   return (
     <aside className="bg-white flex flex-col w-[100px] h-full border-r overflow-y-auto">
       <ul className="flex flex-col">
@@ -29,7 +26,7 @@ export const Sidebar = ({
           icon={LayoutTemplate}
           label="Design"
           isActive={activeTool === "templates"}
-          onClick={() => onChangeActiveTool("templates")} 
+          onClick={() => onChangeActiveTool("templates")}
         />
         <SidebarItem
           icon={ImageIcon}
@@ -47,13 +44,13 @@ export const Sidebar = ({
           icon={Shapes}
           label="Shapes"
           isActive={activeTool === "shapes"}
-          onClick={() => onChangeActiveTool("shapes")} 
+          onClick={() => onChangeActiveTool("shapes")}
         />
         <SidebarItem
           icon={Settings}
           label="Settings"
           isActive={activeTool === "settings"}
-          onClick={() => onChangeActiveTool("settings")} 
+          onClick={() => onChangeActiveTool("settings")}
         />
       </ul>
     </aside>
