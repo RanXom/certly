@@ -1,3 +1,4 @@
+import { StringToBoolean } from "class-variance-authority/types";
 import { fabric } from "fabric";
 
 export type ActiveTool =
@@ -63,9 +64,18 @@ export const DIAMOND_OPTIONS = {
 
 export type BuildEditorProps = {
   canvas: fabric.Canvas;
+  fillColor: string;
+  strokeColor: string;
+  strokeWidth: number;
+  setFillColor: (value: string) => void;
+  setStrokeColor: (value: string) => void;
+  setStrokeWidth: (value: number) => void;
 };
 
 export interface Editor {
+  changeStrokeWidth: (value: number) => void;
+  changeFillColor: (value: string) => void;
+  changeStrokeColor: (value: string) => void;
   addCircle: () => void;
   addSoftRectangle: () => void;
   addRectangle: () => void;
