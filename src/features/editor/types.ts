@@ -37,7 +37,7 @@ export const RECTANGLE_OPTIONS = {
   strokeWidth: STROKE_WIDTH,
   width: 400,
   height: 400,
-  angle: 0
+  angle: 0,
 };
 
 export const TRIANGLE_OPTONS = {
@@ -48,7 +48,7 @@ export const TRIANGLE_OPTONS = {
   strokeWidth: STROKE_WIDTH,
   width: 400,
   height: 400,
-  angle: 0
+  angle: 0,
 };
 
 export const DIAMOND_OPTIONS = {
@@ -59,7 +59,7 @@ export const DIAMOND_OPTIONS = {
   strokeWidth: STROKE_WIDTH,
   width: 565,
   height: 565,
-  angle: 0
+  angle: 0,
 };
 
 export type BuildEditorProps = {
@@ -82,4 +82,8 @@ export interface Editor {
   addTriangle: () => void;
   addInverseTriangle: () => void;
   addDiamond: () => void;
+  canvas: fabric.Canvas;
+  fillColor: string;
+  strokeColor: string;
+  strokeWidth: number;
 }
