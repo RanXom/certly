@@ -76,6 +76,9 @@ const buildEditor = ({
     addCircle: () => {
       const object = new fabric.Circle({
         ...CIRCLE_OPTIONS,
+        fill: fillColor,
+        stroke: strokeColor,
+        strokeWidth: strokeWidth
       });
 
       addToCanvas(object);
@@ -86,6 +89,9 @@ const buildEditor = ({
         ...RECTANGLE_OPTIONS,
         rx: 25,
         ry: 25,
+        fill: fillColor,
+        stroke: strokeColor,
+        strokeWidth: strokeWidth
       });
 
       addToCanvas(object);
@@ -94,6 +100,9 @@ const buildEditor = ({
     addRectangle: () => {
       const object = new fabric.Rect({
         ...RECTANGLE_OPTIONS,
+        fill: fillColor,
+        stroke: strokeColor,
+        strokeWidth: strokeWidth
       });
 
       addToCanvas(object);
@@ -102,6 +111,9 @@ const buildEditor = ({
     addTriangle: () => {
       const object = new fabric.Triangle({
         ...TRIANGLE_OPTONS,
+        fill: fillColor,
+        stroke: strokeColor,
+        strokeWidth: strokeWidth
       });
 
       addToCanvas(object);
@@ -119,6 +131,9 @@ const buildEditor = ({
         ],
         {
           ...TRIANGLE_OPTONS,
+        fill: fillColor,
+        stroke: strokeColor,
+        strokeWidth: strokeWidth
         },
       );
 
@@ -138,6 +153,9 @@ const buildEditor = ({
         ],
         {
           ...DIAMOND_OPTIONS,
+        fill: fillColor,
+        stroke: strokeColor,
+        strokeWidth: strokeWidth
         },
       );
 
