@@ -1,9 +1,6 @@
-import { useEffect, useState } from "react";
+import { useEffect, useMemo, useState } from "react";
 
-import {
-  ActiveTool,
-  Editor,
-} from "@/features/editor/types";
+import { ActiveTool, Editor } from "@/features/editor/types";
 import { ToolSidebarHeader } from "@/features/editor/components/tool-sidebar-header";
 import { ToolSidebarClose } from "@/features/editor/components/tool-sidebar-close";
 
@@ -26,6 +23,17 @@ export const OpacitySidebar = ({
   const initialValue = editor?.getActiveOpacity() || 1;
 
   const [opacity, setOpacity] = useState(initialValue);
+
+  const selectedObject = useMemo(
+    () => editor?.selectedObjects[0],
+    [editor?.selectedObjects],
+  );
+
+  useEffect(() => {
+    if (selectedObject) {
+      setOpacity(selectedObject.get("opacity") || 1);
+    }
+  }, [selectedObject]);
 
   const onClose = () => {
     onChangeActiveTool("select");
