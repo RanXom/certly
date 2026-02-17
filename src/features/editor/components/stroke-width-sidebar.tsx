@@ -1,4 +1,9 @@
-import { ActiveTool, Editor, STROKE_WIDTH } from "@/features/editor/types";
+import {
+  ActiveTool,
+  Editor,
+  STROKE_DASH_ARRAY,
+  STROKE_WIDTH,
+} from "@/features/editor/types";
 import { ToolSidebarHeader } from "@/features/editor/components/tool-sidebar-header";
 import { ToolSidebarClose } from "@/features/editor/components/tool-sidebar-close";
 
@@ -20,7 +25,8 @@ export const StrokeWidthSidebar = ({
   activeTool,
   onChangeActiveTool,
 }: StrokeWidthSidebarProps) => {
-  const value = editor?.getActiveStrokeWidth() || STROKE_WIDTH;
+  const widthValue = editor?.getActiveStrokeWidth() || STROKE_WIDTH;
+  const typeValue = editor?.getActiveStrokeDashArray() || STROKE_DASH_ARRAY;
 
   const onClose = () => {
     onChangeActiveTool("select");
@@ -49,7 +55,7 @@ export const StrokeWidthSidebar = ({
         <div className="p-4 space-y-4 border-b">
           <Label className="text-sm">Stroke Width</Label>
           <Slider
-            value={[value]}
+            value={[widthValue]}
             onValueChange={(values) => onChangeStrokeWidth(values[0])}
           />
         </div>
@@ -59,15 +65,21 @@ export const StrokeWidthSidebar = ({
             onClick={() => onChangeStrokeType([])}
             variant="secondary"
             size="lg"
-            className="w-full h-16 justify-start text-left py-2 px-4"
+            className={cn(
+              "w-full h-16 justify-start text-left py-2 px-4",
+              JSON.stringify(typeValue) === `[]` && "border-2 border-blue-400",
+            )}
           >
             <div className="w-full border-black rounded-full border-4" />
           </Button>
           <Button
-            onClick={() => onChangeStrokeType([5,5])}
+            onClick={() => onChangeStrokeType([5, 5])}
             variant="secondary"
             size="lg"
-            className="w-full h-16 justify-start text-left py-2 px-4"
+            className={cn(
+              "w-full h-16 justify-start text-left py-2 px-4",
+              JSON.stringify(typeValue) === `[5,5]` && "border-2 border-blue-400",
+            )}
           >
             <div className="w-full border-black rounded-full border-4 border-dashed" />
           </Button>
