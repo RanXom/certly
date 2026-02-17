@@ -171,20 +171,28 @@ const buildEditor = ({
         return fillColor;
       }
 
-      const value = selectedObject.get("fill") || fillColor
+      const value = selectedObject.get("fill") || fillColor;
 
       // Currently, gradients and patterns are not supported
       return value as string;
     },
-    strokeColor,
+    getActiveStrokeColor: () => {
+      const selectedObject = selectedObjects[0];
+
+      if (!selectedObject) {
+        return fillColor;
+      }
+
+      const value = selectedObject.get("stroke") || strokeColor;
+
+      return value;
+    },
     strokeWidth,
     selectedObjects,
   };
 };
 
-export const useEditor = ({
-  clearSelectionCallback
-}: EditorHookProps) => {
+export const useEditor = ({ clearSelectionCallback }: EditorHookProps) => {
   const [canvas, setCanvas] = useState<fabric.Canvas | null>(null);
   const [container, setContainer] = useState<HTMLDivElement | null>(null);
   const [selectedObjects, setSelectedObjects] = useState<fabric.Object[]>([]);
@@ -198,7 +206,7 @@ export const useEditor = ({
   useCanvasEvents({
     canvas,
     setSelectedObjects,
-    clearSelectionCallback
+    clearSelectionCallback,
   });
 
   const editor = useMemo(() => {
