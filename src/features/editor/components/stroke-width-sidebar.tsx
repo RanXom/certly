@@ -1,10 +1,16 @@
-import { ActiveTool, Editor, STROKE_COLOR } from "@/features/editor/types";
+import {
+  ActiveTool,
+  Editor,
+  STROKE_WIDTH,
+} from "@/features/editor/types";
 import { ToolSidebarHeader } from "@/features/editor/components/tool-sidebar-header";
 import { ToolSidebarClose } from "@/features/editor/components/tool-sidebar-close";
 
 import { cn } from "@/lib/utils";
 
 import { ScrollArea } from "@/components/ui/scroll-area";
+import { Label } from "@/components/ui/label";
+import { Slider } from "@/components/ui/slider";
 
 interface StrokeWidthSidebarProps {
   editor: Editor | undefined;
@@ -17,14 +23,14 @@ export const StrokeWidthSidebar = ({
   activeTool,
   onChangeActiveTool,
 }: StrokeWidthSidebarProps) => {
-  const value = editor?.getActiveStrokeColor() || STROKE_COLOR;
+  const value = editor?.getActiveStrokeWidth() || STROKE_WIDTH;
 
   const onClose = () => {
     onChangeActiveTool("select");
   };
 
-  const onChange = (value: string) => {
-    editor?.changeStrokeColor(value);
+  const onChange = (value: number) => {
+    editor?.changeStrokeWidth(value);
   };
 
   return (
@@ -35,11 +41,16 @@ export const StrokeWidthSidebar = ({
       )}
     >
       <ToolSidebarHeader
-        title="Stroke Width"
-        description="Change stroke width of your element"
+        title="Stroke Options"
+        description="Modify stroke of your element"
       />
       <ScrollArea>
-        <div className="p-4 space-y-6">
+        <div className="p-4 space-y-4 border-b">
+          <Label className="text-sm">Stroke Width</Label>
+          <Slider
+            value={[value]}
+            onValueChange={(values) => onChange(values[0])}
+          />
         </div>
       </ScrollArea>
       <ToolSidebarClose onClick={onClose} />
