@@ -1,6 +1,16 @@
 import { fabric } from "fabric";
 import * as material from "material-colors";
 
+export const selectionDependentTools = [
+  "fill",
+  "font",
+  "filter",
+  "opacity",
+  "remove-bg",
+  "stroke-color",
+  "stroke-width",
+];
+
 export const colors = [
   material.red["500"],
   material.pink["500"],
@@ -20,7 +30,7 @@ export const colors = [
   material.deepOrange["500"],
   material.brown["500"],
   material.blueGrey["500"],
-  "transparent"
+  "transparent",
 ];
 
 export type ActiveTool =
@@ -82,6 +92,10 @@ export const DIAMOND_OPTIONS = {
   width: 565,
   height: 565,
   angle: 0,
+};
+
+export interface EditorHookProps {
+  clearSelectionCallback?: () => void;
 };
 
 export type BuildEditorProps = {
