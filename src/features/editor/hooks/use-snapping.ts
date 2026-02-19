@@ -17,11 +17,12 @@ export const useSnapping = ({ canvas }: UseSnappingProps) => {
             const object = e.target as fabric.Object;
             if (!object) return;
 
-            const canvasWidth = canvas.getWidth();
-            const canvasHeight = canvas.getHeight();
+            const workspace = canvas.getObjects().find((obj) => obj.name === "clip");
+            if (!workspace) return;
 
-            const centerX = canvasWidth / 2;
-            const centerY = canvasHeight / 2;
+            const workspaceCenter = workspace.getCenterPoint();
+            const centerX = workspaceCenter.x;
+            const centerY = workspaceCenter.y;
 
             const objectCenter = object.getCenterPoint();
 
@@ -61,7 +62,7 @@ export const useSnapping = ({ canvas }: UseSnappingProps) => {
 
             // Draw vertical guideline
             if (snappedVertical) {
-                const line = new fabric.Line([centerX, 0, centerX, canvasHeight], {
+                const line = new fabric.Line([centerX, 0, centerX, canvas.getHeight()], {
                     stroke: GUIDELINE_COLOR,
                     strokeWidth: GUIDELINE_WIDTH,
                     selectable: false,
@@ -74,7 +75,7 @@ export const useSnapping = ({ canvas }: UseSnappingProps) => {
 
             // Draw horizontal guideline
             if (snappedHorizontal) {
-                const line = new fabric.Line([0, centerY, canvasWidth, centerY], {
+                const line = new fabric.Line([0, centerY, canvas.getWidth(), centerY], {
                     stroke: GUIDELINE_COLOR,
                     strokeWidth: GUIDELINE_WIDTH,
                     selectable: false,
