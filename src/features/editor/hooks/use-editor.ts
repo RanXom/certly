@@ -252,6 +252,19 @@ const buildEditor = ({
       // Currently, gradients and patterns are not supported
       return value as string;
     },
+    getActiveFontFamily: () => {
+      const selectedObject = selectedObjects[0];
+
+      if (!selectedObject) {
+        return fontFamily;
+      }
+
+      // @ts-ignore
+      // Faulty TS library, font family exists
+      const value = selectedObject.get("fontFamily") || fontFamily;
+
+      return value;
+    },
     getActiveStrokeColor: () => {
       const selectedObject = selectedObjects[0];
 

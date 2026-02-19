@@ -22,11 +22,6 @@ export const TextSidebar = ({
     onChangeActiveTool("select");
   };
 
-  const onChange = (value: number) => {
-    editor?.changeOpacity(value);
-    setOpacity(value);
-  };
-
   return (
     <aside
       className={cn(

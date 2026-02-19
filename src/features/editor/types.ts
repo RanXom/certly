@@ -140,7 +140,7 @@ export const DIAMOND_OPTIONS = {
 
 export interface EditorHookProps {
   clearSelectionCallback?: () => void;
-};
+}
 
 export type BuildEditorProps = {
   canvas: fabric.Canvas;
@@ -158,6 +158,7 @@ export type BuildEditorProps = {
 };
 
 export interface Editor {
+  getActiveFontFamily: () => string;
   changeFontFamily: (value: string) => void;
   addText: (value: string, option?: ITextboxOptions) => void;
   getActiveOpacity: () => number;

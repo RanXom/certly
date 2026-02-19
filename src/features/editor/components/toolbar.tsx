@@ -1,4 +1,3 @@
-import { useState } from "react";
 import { ActiveTool, Editor } from "../types";
 import { Hint } from "@/components/hint";
 import { Button } from "@/components/ui/button";
@@ -21,6 +20,7 @@ export const Toolbar = ({
 }: ToolbarProps) => {
   const fillColor = editor?.getActiveFillColor();
   const strokeColor = editor?.getActiveStrokeColor();
+  const fontFamily = editor?.getActiveFontFamily();
 
   const selectedObjectType = editor?.selectedObjects[0]?.type;
   const isText = isTextType(selectedObjectType);
@@ -86,12 +86,13 @@ export const Toolbar = ({
               onClick={() => onChangeActiveTool("font")}
               size="icon"
               variant="ghost"
-              className={cn("w-auto px-2 text-sm", activeTool === "font" && "bg-gray-100")}
+              className={cn(
+                "w-auto px-2 text-sm",
+                activeTool === "font" && "bg-gray-100",
+              )}
             >
-            <div className="max-w-[100px] truncate">
-              Arial
-            </div>
-            <ChevronDown className="size-4 ml-2 shrink-0"/>
+              <div className="max-w-[100px] truncate">{fontFamily}</div>
+              <ChevronDown className="size-4 ml-2 shrink-0" />
             </Button>
           </Hint>
         </div>
