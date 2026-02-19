@@ -5,6 +5,7 @@ import { ToolSidebarClose } from "@/features/editor/components/tool-sidebar-clos
 import { cn } from "@/lib/utils";
 
 import { ScrollArea } from "@/components/ui/scroll-area";
+import { Button } from "@/components/ui/button";
 
 interface TextSidebarProps {
   editor: Editor | undefined;
@@ -17,7 +18,6 @@ export const TextSidebar = ({
   activeTool,
   onChangeActiveTool,
 }: TextSidebarProps) => {
-
   const onClose = () => {
     onChangeActiveTool("select");
   };
@@ -34,13 +34,13 @@ export const TextSidebar = ({
         activeTool === "text" ? "visible" : "hidden",
       )}
     >
-      <ToolSidebarHeader
-        title="Text"
-        description="Add text to your canvas"
-      />
+      <ToolSidebarHeader title="Text" description="Add text to your canvas" />
       <ScrollArea>
         <div className="p-4 space-y-4 border-b">
-       </div>
+          <Button className="w-full" onClick={() => editor?.addText()}>
+            Add a text box
+          </Button>
+        </div>
       </ScrollArea>
       <ToolSidebarClose onClick={onClose} />
     </aside>
