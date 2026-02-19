@@ -19,6 +19,7 @@ import {
 
 import { useAutoResize } from "@/features/editor/hooks/use-auto-resize";
 import { useCanvasEvents } from "@/features/editor/hooks/use-canvas-events";
+import { useSnapping } from "@/features/editor/hooks/use-snapping";
 import { isTextType } from "@/features/editor/utils";
 
 const buildEditor = ({
@@ -321,6 +322,8 @@ export const useEditor = ({ clearSelectionCallback }: EditorHookProps) => {
     setSelectedObjects,
     clearSelectionCallback,
   });
+
+  useSnapping({ canvas });
 
   const editor = useMemo(() => {
     if (canvas) {

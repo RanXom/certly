@@ -23,7 +23,7 @@ export const fonts = [
   "Georgia",
   "Garamond",
   "Courier New",
-  "Brush Script MT",
+  "Dancing Script",
   "Palatino",
   "Bookman",
   "Comic Sans MS",

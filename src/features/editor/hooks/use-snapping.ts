@@ -1,0 +1,114 @@
+import { fabric } from "fabric";
+import { useEffect } from "react";
+
+interface UseSnappingProps {
+    canvas: fabric.Canvas | null;
+}
+
+const SNAP_THRESHOLD = 5;
+const GUIDELINE_COLOR = "rgb(173, 216, 230)"; // Light blue
+const GUIDELINE_WIDTH = 1;
+
+export const useSnapping = ({ canvas }: UseSnappingProps) => {
+    useEffect(() => {
+        if (!canvas) return;
+
+        const handleObjectMoving = (e: fabric.IEvent) => {
+            const object = e.target as fabric.Object;
+            if (!object) return;
+
+            const canvasWidth = canvas.getWidth();
+            const canvasHeight = canvas.getHeight();
+
+            const centerX = canvasWidth / 2;
+            const centerY = canvasHeight / 2;
+
+            const objectCenter = object.getCenterPoint();
+
+            // We will track if we snapped to center to show/hide lines
+            let snappedVertical = false;
+            let snappedHorizontal = false;
+
+            // Vertical Line (Snapping to horizontal center)
+            if (Math.abs(objectCenter.x - centerX) < SNAP_THRESHOLD) {
+                object.setPositionByOrigin(
+                    new fabric.Point(centerX, objectCenter.y),
+                    "center",
+                    "center"
+                );
+                snappedVertical = true;
+            }
+
+            // Horizontal Line (Snapping to vertical center)
+            if (Math.abs(objectCenter.y - centerY) < SNAP_THRESHOLD) {
+                object.setPositionByOrigin(
+                    new fabric.Point(objectCenter.x, centerY),
+                    "center",
+                    "center"
+                );
+                snappedHorizontal = true;
+            }
+
+            // Clear existing guidelines
+            canvas.getObjects("line").forEach((obj) => {
+                if (
+                    obj.name === "vertical-guideline" ||
+                    obj.name === "horizontal-guideline"
+                ) {
+                    canvas.remove(obj);
+                }
+            });
+
+            // Draw vertical guideline
+            if (snappedVertical) {
+                const line = new fabric.Line([centerX, 0, centerX, canvasHeight], {
+                    stroke: GUIDELINE_COLOR,
+                    strokeWidth: GUIDELINE_WIDTH,
+                    selectable: false,
+                    evented: false,
+                    name: "vertical-guideline",
+                    strokeDashArray: [4, 4], // Optional: make it dashed
+                });
+                canvas.add(line);
+            }
+
+            // Draw horizontal guideline
+            if (snappedHorizontal) {
+                const line = new fabric.Line([0, centerY, canvasWidth, centerY], {
+                    stroke: GUIDELINE_COLOR,
+                    strokeWidth: GUIDELINE_WIDTH,
+                    selectable: false,
+                    evented: false,
+                    name: "horizontal-guideline",
+                    strokeDashArray: [4, 4],
+                });
+                canvas.add(line);
+            }
+
+            // If we snapped, we might need to re-render to show the lines immediately
+            if (snappedVertical || snappedHorizontal) {
+                canvas.requestRenderAll();
+            }
+        };
+
+        const clearGuidelines = () => {
+            canvas.getObjects("line").forEach((obj) => {
+                if (
+                    obj.name === "vertical-guideline" ||
+                    obj.name === "horizontal-guideline"
+                ) {
+                    canvas.remove(obj);
+                }
+            });
+            canvas.requestRenderAll();
+        };
+
+        canvas.on("object:moving", handleObjectMoving);
+        canvas.on("mouse:up", clearGuidelines);
+
+        return () => {
+            canvas.off("object:moving", handleObjectMoving);
+            canvas.off("mouse:up", clearGuidelines);
+        };
+    }, [canvas]);
+};
