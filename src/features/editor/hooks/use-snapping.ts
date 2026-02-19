@@ -6,7 +6,7 @@ interface UseSnappingProps {
 }
 
 const SNAP_THRESHOLD = 5;
-const GUIDELINE_COLOR = "rgb(173, 216, 230)"; // Light blue
+const GUIDELINE_COLOR = "rgba(0, 157, 255, 1)"; // Light blue
 const GUIDELINE_WIDTH = 1;
 
 export const useSnapping = ({ canvas }: UseSnappingProps) => {
@@ -68,7 +68,6 @@ export const useSnapping = ({ canvas }: UseSnappingProps) => {
                     selectable: false,
                     evented: false,
                     name: "vertical-guideline",
-                    strokeDashArray: [4, 4], // Optional: make it dashed
                 });
                 canvas.add(line);
             }
@@ -81,7 +80,6 @@ export const useSnapping = ({ canvas }: UseSnappingProps) => {
                     selectable: false,
                     evented: false,
                     name: "horizontal-guideline",
-                    strokeDashArray: [4, 4],
                 });
                 canvas.add(line);
             }
