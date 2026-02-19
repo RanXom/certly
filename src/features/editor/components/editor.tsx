@@ -12,8 +12,10 @@ import { ShapeSidebar } from "@/features/editor/components/shape-sidebar";
 import { FillColorSidebar } from "@/features/editor/components/fill-color-sidebar";
 import { StrokeColorSidebar } from "@/features/editor/components/stroke-color-sidebar";
 import { StrokeWidthSidebar } from "@/features/editor/components/stroke-width-sidebar";
-import { OpacitySidebar } from "./opacity-sidebar";
-import { TextSidebar } from "./text-sidebar";
+import { OpacitySidebar } from "@/features/editor/components/opacity-sidebar";
+import { TextSidebar } from "@/features/editor/components/text-sidebar";
+import { FontSidebar } from "@/features/editor/components/font-sidebar";
+import { FontLoader } from "@/features/editor/components/font-loader";
 
 export const Editor = () => {
   const [activeTool, setActiveTool] = useState<ActiveTool>("select");
@@ -68,6 +70,7 @@ export const Editor = () => {
 
   return (
     <div className="h-full flex flex-col">
+      <FontLoader />
       <Navbar activeTool={activeTool} onChangeActiveTool={onChangeActiveTool} />
       <div className="absolute h-[calc(100%-68px)] w-full top-[68px] flex">
         <Sidebar
@@ -100,6 +103,11 @@ export const Editor = () => {
           onChangeActiveTool={onChangeActiveTool}
         />
         <TextSidebar
+          editor={editor}
+          activeTool={activeTool}
+          onChangeActiveTool={onChangeActiveTool}
+        />
+        <FontSidebar
           editor={editor}
           activeTool={activeTool}
           onChangeActiveTool={onChangeActiveTool}

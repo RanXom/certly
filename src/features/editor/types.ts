@@ -12,6 +12,37 @@ export const selectionDependentTools = [
   "stroke-width",
 ];
 
+export const fonts = [
+  "Arial",
+  "Arial Black",
+  "Verdana",
+  "Helvetica",
+  "Tahoma",
+  "Trebuchet MS",
+  "Times New Roman",
+  "Georgia",
+  "Garamond",
+  "Courier New",
+  "Brush Script MT",
+  "Palatino",
+  "Bookman",
+  "Comic Sans MS",
+  "Impact",
+  "Lucida Sans Unicode",
+  "Geneva",
+  "Lucida Console",
+  "Roboto",
+  "Open Sans",
+  "Lato",
+  "Montserrat",
+  "Oswald",
+  "Raleway",
+  "Merriweather",
+  "Playfair Display",
+  "Nunito",
+  "Ubuntu",
+];
+
 export const colors = [
   material.red["500"],
   material.pink["500"],
@@ -118,14 +149,17 @@ export type BuildEditorProps = {
   strokeWidth: number;
   strokeDashArray: number[];
   selectedObjects: fabric.Object[];
+  fontFamily: string;
   setFillColor: (value: string) => void;
   setStrokeColor: (value: string) => void;
   setStrokeWidth: (value: number) => void;
   setStrokeDashArray: (value: number[]) => void;
+  setFontFamily: (value: string) => void;
 };
 
 export interface Editor {
-  addText: (value: string, option?:ITextboxOptions) => void;
+  changeFontFamily: (value: string) => void;
+  addText: (value: string, option?: ITextboxOptions) => void;
   getActiveOpacity: () => number;
   changeOpacity: (value: number) => void;
   bringForward: () => void;
