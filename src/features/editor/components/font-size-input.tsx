@@ -9,17 +9,31 @@ interface FontSizeInputProps {
 }
 
 export const FontSizeInput = ({ value, onChange }: FontSizeInputProps) => {
+  const increment = () => onChange(value + 1);
+  const decrement = () => onChange(value - 1);
+
+  const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const value = parseInt(e.target.value, 10);
+    onChange(value);
+  };
+
   return (
     <div className="flex items-center">
       <Button
+        onClick={decrement}
         variant="outline"
         className="p-2 rounder-r-none border-r-0"
         size="icon"
       >
         <Minus className="size-4" />
       </Button>
-      <Input className="w-[50px] h-8 focus-visible:ring-offset-0 focus-visible:ring-0 rounded-none" />
+      <Input
+        onChange={handleChange}
+        value={value}
+        className="w-[50px] h-8 focus-visible:ring-offset-0 focus-visible:ring-0 rounded-none"
+      />
       <Button
+        onClick={increment}
         variant="outline"
         className="p-2 rounder-l-none border-l-0"
         size="icon"
