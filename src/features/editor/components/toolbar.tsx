@@ -1,11 +1,12 @@
-import { ActiveTool, Editor } from "../types";
+import { ActiveTool, Editor, FONT_SIZE, FONT_WEIGHT } from "@/features/editor/types";
 import { Hint } from "@/components/hint";
 import { Button } from "@/components/ui/button";
 import { cn } from "@/lib/utils";
 import { BsBorderWidth } from "react-icons/bs";
 import { ArrowDown, ArrowUp, ChevronDown } from "lucide-react";
 import { RxTransparencyGrid } from "react-icons/rx";
-import { isTextType } from "../utils";
+import { isTextType } from "@/features/editor/utils";
+import { FaBold } from "react-icons/fa6";
 
 interface ToolbarProps {
   editor: Editor | undefined;
@@ -21,9 +22,23 @@ export const Toolbar = ({
   const fillColor = editor?.getActiveFillColor();
   const strokeColor = editor?.getActiveStrokeColor();
   const fontFamily = editor?.getActiveFontFamily();
+  const fontWeight = editor?.getActiveFontWeight() || FONT_WEIGHT;
 
   const selectedObjectType = editor?.selectedObjects[0]?.type;
+
   const isText = isTextType(selectedObjectType);
+
+  const toggleBold = () => {
+    const selectedObject = editor?.selectedObjects[0];
+
+    if (!selectedObject) {
+      return;
+    }
+
+    const newValue = fontWeight > 500 ? 500:700;
+
+    editor?.changeFontWeight(newValue);
+  };
 
   if (editor?.selectedObjects.length === 0) {
     return (
@@ -93,6 +108,22 @@ export const Toolbar = ({
             >
               <div className="max-w-[100px] truncate">{fontFamily}</div>
               <ChevronDown className="size-4 ml-2 shrink-0" />
+            </Button>
+          </Hint>
+        </div>
+      )}
+      {isText && (
+        <div className="flex items-center h-full justify-center">
+          <Hint label="Bold" side="bottom" sideOffset={5}>
+            <Button
+              onClick={toggleBold}
+              size="icon"
+              variant="ghost"
+              className={cn(
+                fontWeight > 500 && "bg-gray-100"
+              )}
+            >
+              <FaBold className="size-4" />
             </Button>
           </Hint>
         </div>
