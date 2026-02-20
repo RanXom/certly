@@ -21,6 +21,7 @@ import {
   FaStrikethrough,
   FaUnderline,
 } from "react-icons/fa6";
+import { FontSizeInput } from "@/features/editor/components/font-size-input";
 
 interface ToolbarProps {
   editor: Editor | undefined;
@@ -300,6 +301,13 @@ export const Toolbar = ({
             </Button>
           </Hint>
         </div>
+      )}
+      {isText && (
+        <div className="flex items-center h-full justify-center">
+          <FontSizeInput
+            
+          />
+       </div>
       )}
       <div className="flex items-center h-full justify-center">
         <Hint label="Bring Forwards" side="bottom" sideOffset={5}>
