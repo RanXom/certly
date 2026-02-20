@@ -159,8 +159,10 @@ export type BuildEditorProps = {
 };
 
 export interface Editor {
+  getActiveFontStyle: () => string;
   getActiveFontFamily: () => string;
   getActiveFontWeight: () => number;
+  changeFontStyle: (value: string) => void;
   changeFontWeight: (value: number) => void;
   changeFontFamily: (value: string) => void;
   addText: (value: string, option?: ITextboxOptions) => void;

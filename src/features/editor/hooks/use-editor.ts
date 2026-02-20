@@ -78,6 +78,18 @@ const buildEditor = ({
 
       return value;
     },
+    getActiveFontStyle: () => {
+      const selectedObject = selectedObjects[0];
+
+      if (!selectedObject) {
+        return "normal";
+      }
+
+      // @ts-ignore
+      const value = selectedObject.get("fontStyle") || "normal";
+
+      return value;
+    },
     getActiveFontWeight: () => {
       const selectedObject = selectedObjects[0];
 
@@ -89,6 +101,17 @@ const buildEditor = ({
       const value = selectedObject.get("fontWeight") || FONT_WEIGHT;
 
       return value;
+    },
+    changeFontStyle: (value: string) => {
+      canvas.getActiveObjects().forEach((object) => {
+        if (isTextType(object.type)) {
+          // @ts-ignore
+          // Faulty TS, font style exists
+          object.set({ fontStyle: value });
+        }
+      });
+
+      canvas.renderAll();
     },
     changeFontWeight: (value: number) => {
       canvas.getActiveObjects().forEach((object) => {
