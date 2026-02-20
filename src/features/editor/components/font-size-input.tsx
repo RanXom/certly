@@ -10,11 +10,12 @@ interface FontSizeInputProps {
 
 export const FontSizeInput = ({ value, onChange }: FontSizeInputProps) => {
   const increment = () => onChange(value + 1);
-  const decrement = () => onChange(value - 1);
+  const decrement = () => onChange(Math.max(1, value - 1));
 
   const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const value = parseInt(e.target.value, 10);
-    onChange(value);
+    const newValue = Number.isNaN(value) ? 1 : value;
+    onChange(Math.max(1, newValue));
   };
 
   return (
