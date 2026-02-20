@@ -1,6 +1,6 @@
 import { useState } from "react";
 
-import { ActiveTool, Editor, FONT_WEIGHT } from "@/features/editor/types";
+import { ActiveTool, Editor, FONT_SIZE, FONT_WEIGHT } from "@/features/editor/types";
 import { Hint } from "@/components/hint";
 import { Button } from "@/components/ui/button";
 import { cn } from "@/lib/utils";
@@ -42,6 +42,7 @@ export const Toolbar = ({
   const initialFontLinethrough = editor?.getActiveFontLinethrough();
   const initialFontUnderline = editor?.getActiveFontUnderline();
   const initialTextAlign = editor?.getActiveTextAlign();
+  const initialFontSize = editor?.getActiveFontSize() || FONT_SIZE;
 
   const [properties, setProperties] = useState({
     fillColor: initialFillColor,
@@ -52,12 +53,25 @@ export const Toolbar = ({
     fontLinethrough: initialFontLinethrough,
     fontUnderline: initialFontUnderline,
     textAlign: initialTextAlign,
+    fontSize: initialFontSize,
   });
 
   const selectedObjectType = editor?.selectedObjects[0]?.type;
   const selectedObject = editor?.selectedObjects[0];
 
   const isText = isTextType(selectedObjectType);
+
+  const onChangeFontSize = (value: number) => {
+    if (!selectedObject) {
+      return;
+    }
+
+    editor?.changeFontSize(value);
+    setProperties((current) => ({
+      ...current,
+      fontSize: value,
+    }));
+  };
 
   const onChangeTextAlign = (value: string) => {
     if (!selectedObject) {
@@ -305,9 +319,10 @@ export const Toolbar = ({
       {isText && (
         <div className="flex items-center h-full justify-center">
           <FontSizeInput
-            
+            value={properties.fontSize}
+            onChange={onChangeFontSize}
           />
-       </div>
+        </div>
       )}
       <div className="flex items-center h-full justify-center">
         <Hint label="Bring Forwards" side="bottom" sideOffset={5}>
