@@ -126,6 +126,29 @@ const buildEditor = ({
 
       return value;
     },
+    getActiveTextAlign: () => {
+      const selectedObject = selectedObjects[0];
+
+      if (!selectedObject) {
+        return "left";
+      }
+
+      // @ts-ignore
+      const value = selectedObject.get("textAlign") || "left";
+
+      return value;
+    },
+    changeTextAlign: (value: string) => {
+      canvas.getActiveObjects().forEach((object) => {
+        if (isTextType(object.type)) {
+          // @ts-ignore
+          // Faulty TS, font textAlign exists
+          object.set({ textAlign: value });
+        }
+      });
+
+      canvas.renderAll();
+    },
     changeFontUnderline: (value: boolean) => {
       canvas.getActiveObjects().forEach((object) => {
         if (isTextType(object.type)) {

@@ -159,11 +159,13 @@ export type BuildEditorProps = {
 };
 
 export interface Editor {
+  getActiveTextAlign: () => string;
   getActiveFontUnderline: () => boolean;
   getActiveFontLinethrough: () => boolean;
   getActiveFontStyle: () => string;
   getActiveFontFamily: () => string;
   getActiveFontWeight: () => number;
+  changeTextAlign: (value: string) => void;
   changeFontUnderline: (value: boolean) => void;
   changeFontLinethrough: (value: boolean) => void;
   changeFontStyle: (value: string) => void;
