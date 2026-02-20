@@ -159,6 +159,7 @@ export type BuildEditorProps = {
 };
 
 export interface Editor {
+  delete: () => void;
   getActiveFontSize: () => number;
   getActiveTextAlign: () => string;
   getActiveFontUnderline: () => boolean;
