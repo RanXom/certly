@@ -69,7 +69,7 @@ export type ActiveTool =
   | "select"
   | "shapes"
   | "text"
-  | "image"
+  | "images"
   | "draw"
   | "fill"
   | "stroke-color"

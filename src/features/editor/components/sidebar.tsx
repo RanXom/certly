@@ -31,8 +31,8 @@ export const Sidebar = ({ activeTool, onChangeActiveTool }: SidebarProps) => {
         <SidebarItem
           icon={ImageIcon}
           label="Image"
-          isActive={activeTool === "image"}
-          onClick={() => onChangeActiveTool("image")}
+          isActive={activeTool === "images"}
+          onClick={() => onChangeActiveTool("images")}
         />
         <SidebarItem
           icon={Type}
