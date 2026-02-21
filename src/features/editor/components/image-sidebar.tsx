@@ -7,6 +7,7 @@ import { ToolSidebarClose } from "@/features/editor/components/tool-sidebar-clos
 import { useGetImages } from "@/features/images/api/use-get-images";
 
 import { cn } from "@/lib/utils";
+import Image from "next/image";
 
 interface ImageSidebarProps {
   editor: Editor | undefined;
@@ -50,7 +51,23 @@ export const ImageSidebar = ({
         </div>
       )}
       <div className="flex-1 overflow-y-auto scrollbar-hide">
-        <div className="p-4 space-y-1 border-b"></div>
+        <div className="p-4 space-y-1 border-b">
+          {data && data.map((image) => {
+            return (
+              <button 
+                key={image.id}
+                className="relative w-full h-[100px] group hover:opacity-75 transition bg-muted rounded-sm overflow-hidden border"
+              >
+                <Image 
+                  fill
+                  src={image.urls.small}
+                  alt={image.alt_description || "Image"}
+                  className="object-cover"
+                />
+              </button>
+            )
+          })}
+        </div>
       </div>
       <ToolSidebarClose onClick={onClose} />
     </aside>
