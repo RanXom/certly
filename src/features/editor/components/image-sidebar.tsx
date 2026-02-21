@@ -8,6 +8,7 @@ import { useGetImages } from "@/features/images/api/use-get-images";
 
 import { cn } from "@/lib/utils";
 import Image from "next/image";
+import Link from "next/link";
 
 interface ImageSidebarProps {
   editor: Editor | undefined;
@@ -64,6 +65,13 @@ export const ImageSidebar = ({
                   alt={image.alt_description || "Image"}
                   className="object-cover"
                 />
+                <Link
+                target="_blank"
+                  href={image.links.html}
+                  className="opacity-0 group-hover:opacity-100 absolute left-0 bottom-0 w-full text-[10px] truncate text-white hover:underline p-1 bg-black/50 text-left"
+                >
+                  {image.user.name}
+                </Link>
               </button>
             )
           })}
