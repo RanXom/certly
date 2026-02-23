@@ -50,6 +50,22 @@ export const useSnapping = ({ canvas }: UseSnappingProps) => {
                 snappedHorizontal = true;
             }
 
+            const zoom = canvas.getZoom();
+            const viewportTransform = canvas.viewportTransform;
+
+            if (!viewportTransform) return;
+
+            // Calculate the logical coordinates of the top-left and bottom-right corners of the viewport
+            const viewportTopLeft = fabric.util.transformPoint(
+                new fabric.Point(0, 0),
+                fabric.util.invertTransform(viewportTransform)
+            );
+
+            const viewportBottomRight = fabric.util.transformPoint(
+                new fabric.Point(canvas.getWidth() || 0, canvas.getHeight() || 0),
+                fabric.util.invertTransform(viewportTransform)
+            );
+
             // Clear existing guidelines
             canvas.getObjects("line").forEach((obj) => {
                 if (
@@ -62,9 +78,9 @@ export const useSnapping = ({ canvas }: UseSnappingProps) => {
 
             // Draw vertical guideline
             if (snappedVertical) {
-                const line = new fabric.Line([centerX, 0, centerX, canvas.getHeight()], {
+                const line = new fabric.Line([centerX, viewportTopLeft.y, centerX, viewportBottomRight.y], {
                     stroke: GUIDELINE_COLOR,
-                    strokeWidth: GUIDELINE_WIDTH,
+                    strokeWidth: GUIDELINE_WIDTH / zoom, // Keep visually exactly 1px
                     selectable: false,
                     evented: false,
                     name: "vertical-guideline",
@@ -74,9 +90,9 @@ export const useSnapping = ({ canvas }: UseSnappingProps) => {
 
             // Draw horizontal guideline
             if (snappedHorizontal) {
-                const line = new fabric.Line([0, centerY, canvas.getWidth(), centerY], {
+                const line = new fabric.Line([viewportTopLeft.x, centerY, viewportBottomRight.x, centerY], {
                     stroke: GUIDELINE_COLOR,
-                    strokeWidth: GUIDELINE_WIDTH,
+                    strokeWidth: GUIDELINE_WIDTH / zoom, // Keep visually exactly 1px
                     selectable: false,
                     evented: false,
                     name: "horizontal-guideline",
