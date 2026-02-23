@@ -23,6 +23,7 @@ export const filters = [
   "vintage",
   "technicolor",
   "pixelate",
+  "grayscale",
   "invert",
   "blur",
   "sharpen",
@@ -33,6 +34,7 @@ export const filters = [
   "blendcolor",
   "huerotate",
   "resize",
+  "saturation",
   "gamma",
 ];
 

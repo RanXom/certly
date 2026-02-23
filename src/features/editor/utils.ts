@@ -52,6 +52,9 @@ export const createFilter = (value: string) => {
     case "pixelate":
       effect = new fabric.Image.filters.Pixelate();
       break;
+    case "grayscale":
+      effect = new fabric.Image.filters.Grayscale();
+      break;
     case "invert":
       effect = new fabric.Image.filters.Invert();
       break;
@@ -98,6 +101,11 @@ export const createFilter = (value: string) => {
       break;
     case "resize":
       effect = new fabric.Image.filters.Resize();
+      break;
+    case "saturation":
+      effect = new fabric.Image.filters.Saturation({
+        saturation: 0.7,
+      });
       break;
     case "gamma":
       // @ts-ignore
