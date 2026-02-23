@@ -31,7 +31,7 @@ export const ImageSidebar = ({
   return (
     <aside
       className={cn(
-        "bg-white relative border-r z-40 w-[360px] h-full flex flex-col overflow-hidden",
+        "bg-white relative border-r z-40 w-[360px] h-full flex flex-col",
         activeTool === "images" ? "visible" : "hidden",
       )}
     >
