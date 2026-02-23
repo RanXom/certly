@@ -22,7 +22,7 @@ import {
 import { useAutoResize } from "@/features/editor/hooks/use-auto-resize";
 import { useCanvasEvents } from "@/features/editor/hooks/use-canvas-events";
 import { useSnapping } from "@/features/editor/hooks/use-snapping";
-import { isTextType } from "@/features/editor/utils";
+import { createFilter, isTextType } from "@/features/editor/utils";
 
 const buildEditor = ({
   canvas,
@@ -65,7 +65,11 @@ const buildEditor = ({
         if (object.type === "image") {
           const imageObject = object as fabric.Image;
 
-          
+          const effect = createFilter(value);
+
+          imageObject.filters = effect ? [effect] : [];
+          imageObject.applyFilters();
+          canvas.renderAll();
         }
       });
     },
