@@ -34,6 +34,7 @@ export const FilterSidebar = ({
       />
       <div className="flex-1 overflow-y-auto scrollbar-hide">
         <div className="p-4 space-y-1 border-b">
+          {/* TODO: Replace hardcoded text with sample images of each filter after manually exporting an image with each fitler */}
           {filters.map((filter) => (
             <Button
               key={filter}

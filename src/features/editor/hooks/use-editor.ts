@@ -23,8 +23,12 @@ import { useAutoResize } from "@/features/editor/hooks/use-auto-resize";
 import { useCanvasEvents } from "@/features/editor/hooks/use-canvas-events";
 import { useSnapping } from "@/features/editor/hooks/use-snapping";
 import { createFilter, isTextType } from "@/features/editor/utils";
+import { useClipboard } from "./use-clipboard";
+import { PiAsterisk } from "react-icons/pi";
 
 const buildEditor = ({
+  copy,
+  paste,
   canvas,
   fillColor,
   setFillColor,
@@ -59,6 +63,8 @@ const buildEditor = ({
   };
 
   return {
+    onCopy: () => copy(),
+    onPaste: () => paste(),
     changeImageFilter: (value: string) => {
       const objects = canvas.getActiveObjects();
       objects.forEach((object) => {
@@ -503,6 +509,8 @@ export const useEditor = ({ clearSelectionCallback }: EditorHookProps) => {
   const [strokeDashArray, setStrokeDashArray] =
     useState<number[]>(STROKE_DASH_ARRAY);
 
+  const { copy, paste } = useClipboard({ canvas });
+
   useAutoResize({ canvas, container });
 
   useCanvasEvents({
@@ -516,6 +524,8 @@ export const useEditor = ({ clearSelectionCallback }: EditorHookProps) => {
   const editor = useMemo(() => {
     if (canvas) {
       return buildEditor({
+        copy,
+        paste,
         canvas,
         fillColor,
         setFillColor,
@@ -533,6 +543,8 @@ export const useEditor = ({ clearSelectionCallback }: EditorHookProps) => {
 
     return undefined;
   }, [
+    copy,
+    paste,
     canvas,
     fillColor,
     strokeColor,
