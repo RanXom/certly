@@ -16,9 +16,21 @@ export const useCanvasEvents = ({
 }: UseCanvasEventsProps) => {
     useEffect(() => {
         if (canvas) {
-            canvas.on("object:added", () => save());
-            canvas.on("object:removed", () => save());
-            canvas.on("object:modified", () => save());
+            canvas.on("object:added", (e) => {
+                const object = e.target;
+                if (object?.name === "vertical-guideline" || object?.name === "horizontal-guideline") return;
+                save();
+            });
+            canvas.on("object:removed", (e) => {
+                const object = e.target;
+                if (object?.name === "vertical-guideline" || object?.name === "horizontal-guideline") return;
+                save();
+            });
+            canvas.on("object:modified", (e) => {
+                const object = e.target;
+                if (object?.name === "vertical-guideline" || object?.name === "horizontal-guideline") return;
+                save();
+            });
             canvas.on("selection:created", (e) => {
                 setSelectedObjects(e.selected || []);
             });

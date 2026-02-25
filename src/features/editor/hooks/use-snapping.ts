@@ -84,6 +84,7 @@ export const useSnapping = ({ canvas }: UseSnappingProps) => {
                     selectable: false,
                     evented: false,
                     name: "vertical-guideline",
+                    excludeFromExport: true,
                 });
                 canvas.add(line);
             }
@@ -96,6 +97,7 @@ export const useSnapping = ({ canvas }: UseSnappingProps) => {
                     selectable: false,
                     evented: false,
                     name: "horizontal-guideline",
+                    excludeFromExport: true,
                 });
                 canvas.add(line);
             }

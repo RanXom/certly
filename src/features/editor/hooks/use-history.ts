@@ -1,3 +1,4 @@
+import { fabric } from "fabric";
 import { useCallback, useRef, useState } from "react";
 import { JSON_KEYS } from "@/features/editor/types";
 
@@ -9,6 +10,7 @@ export const useHistory = ({ canvas }: UseHistoryProps) => {
   const [historyIndex, setHistoryIndex] = useState(0);
   const canvasHistory = useRef<string[]>([]);
   const skipSave = useRef(false);
+  const historyIndexRef = useRef(0);
 
   const canUndo = useCallback(() => {
     return historyIndex > 0;
@@ -18,15 +20,24 @@ export const useHistory = ({ canvas }: UseHistoryProps) => {
     return historyIndex < canvasHistory.current.length - 1;
   }, [historyIndex]);
 
-  const save = useCallback(() => {
+  const save = useCallback((skip = false) => {
     if (!canvas) return;
 
     const currentState = canvas.toJSON(JSON_KEYS);
     const json = JSON.stringify(currentState);
 
     if (!skip && !skipSave.current) {
+      canvasHistory.current = canvasHistory.current.slice(0, historyIndexRef.current + 1);
+
+      // Avoid saving duplicate sequential states
+      if (canvasHistory.current.length > 0 &&
+        canvasHistory.current[canvasHistory.current.length - 1] === json) {
+        return;
+      }
+
       canvasHistory.current.push(json);
-      setHistoryIndex(canvasHistory.current.length - 1);
+      historyIndexRef.current = canvasHistory.current.length - 1;
+      setHistoryIndex(historyIndexRef.current);
     }
 
     // TODO: Save callback
@@ -43,6 +54,7 @@ export const useHistory = ({ canvas }: UseHistoryProps) => {
       canvas?.loadFromJSON(previousState, () => {
         canvas.renderAll();
         setHistoryIndex(previousIndex);
+        historyIndexRef.current = previousIndex;
         skipSave.current = false;
       });
     }
@@ -58,7 +70,8 @@ export const useHistory = ({ canvas }: UseHistoryProps) => {
 
       canvas?.loadFromJSON(nextState, () => {
         canvas.renderAll();
-        setHistoryIndex(nextState);
+        setHistoryIndex(nextIndex);
+        historyIndexRef.current = nextIndex;
         skipSave.current = false;
       });
     }
