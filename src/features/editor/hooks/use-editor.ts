@@ -23,8 +23,8 @@ import { useAutoResize } from "@/features/editor/hooks/use-auto-resize";
 import { useCanvasEvents } from "@/features/editor/hooks/use-canvas-events";
 import { useSnapping } from "@/features/editor/hooks/use-snapping";
 import { createFilter, isTextType } from "@/features/editor/utils";
-import { useClipboard } from "./use-clipboard";
-import { PiAsterisk } from "react-icons/pi";
+import { useClipboard } from "@/features/editor/hooks/use-clipboard";
+import { useHistory } from "@/features/editor/hooks/use-history";
 
 const buildEditor = ({
   autoZoom,
@@ -560,11 +560,14 @@ export const useEditor = ({ clearSelectionCallback }: EditorHookProps) => {
   const [strokeDashArray, setStrokeDashArray] =
     useState<number[]>(STROKE_DASH_ARRAY);
 
+    const { save } = useHistory();
+
   const { copy, paste } = useClipboard({ canvas });
 
   const { autoZoom } = useAutoResize({ canvas, container });
 
   useCanvasEvents({
+    save,
     canvas,
     setSelectedObjects,
     clearSelectionCallback,
