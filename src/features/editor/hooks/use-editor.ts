@@ -27,6 +27,7 @@ import { useClipboard } from "./use-clipboard";
 import { PiAsterisk } from "react-icons/pi";
 
 const buildEditor = ({
+  autoZoom,
   copy,
   paste,
   canvas,
@@ -63,6 +64,21 @@ const buildEditor = ({
   };
 
   return {
+    getWorkspace,
+    changeSize: (size: { width: number; height: number }) => {
+      const workspace = getWorkspace();
+
+      workspace?.set(size);
+      autoZoom();
+      // TODO: save
+    },
+    changeBackground: (value: string) => {
+        const workspace = getWorkspace();
+        workspace?.set({ fill: value });
+        canvas.renderAll();
+
+        // TODO: 
+    },
     enableDrawingMode: () => {
       canvas.discardActiveObject();
       canvas.renderAll();
@@ -523,7 +539,7 @@ export const useEditor = ({ clearSelectionCallback }: EditorHookProps) => {
 
   const { copy, paste } = useClipboard({ canvas });
 
-  useAutoResize({ canvas, container });
+  const { autoZoom } = useAutoResize({ canvas, container });
 
   useCanvasEvents({
     canvas,
@@ -536,6 +552,7 @@ export const useEditor = ({ clearSelectionCallback }: EditorHookProps) => {
   const editor = useMemo(() => {
     if (canvas) {
       return buildEditor({
+        autoZoom,
         copy,
         paste,
         canvas,
@@ -555,6 +572,7 @@ export const useEditor = ({ clearSelectionCallback }: EditorHookProps) => {
 
     return undefined;
   }, [
+    autoZoom,
     copy,
     paste,
     canvas,
