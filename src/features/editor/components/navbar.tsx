@@ -23,10 +23,11 @@ import {
 
 import { Separator } from "@/components/ui/separator";
 import { BsCloudCheck } from "react-icons/bs";
-import { ActiveTool } from "@/features/editor/types";
+import { ActiveTool, Editor } from "@/features/editor/types";
 import { cn } from "@/lib/utils";
 
 interface NavbarProps {
+  editor: Editor | undefined;
   activeTool: ActiveTool;
   onChangeActiveTool: (tool: ActiveTool) => void;
 }

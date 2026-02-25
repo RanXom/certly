@@ -27,6 +27,11 @@ import { useClipboard } from "@/features/editor/hooks/use-clipboard";
 import { useHistory } from "@/features/editor/hooks/use-history";
 
 const buildEditor = ({
+  save, 
+  undo,
+  redo,
+  canUndo,
+  canRedo,
   autoZoom,
   copy,
   paste,
@@ -64,6 +69,8 @@ const buildEditor = ({
   };
 
   return {
+    canUndo,
+    canRedo,
     autoZoom,
     getWorkspace,
     zoomIn: () => {
@@ -74,7 +81,7 @@ const buildEditor = ({
 
       canvas.zoomToPoint(
         new fabric.Point(center.left, center.top),
-        zoomRatio > 1 ? 1 : zoomRatio
+        zoomRatio > 1 ? 1 : zoomRatio,
       );
     },
     zoomOut: () => {
@@ -85,7 +92,7 @@ const buildEditor = ({
 
       canvas.zoomToPoint(
         new fabric.Point(center.left, center.top),
-        zoomRatio < 0.2 ? 0.2 : zoomRatio
+        zoomRatio < 0.2 ? 0.2 : zoomRatio,
       );
     },
     changeSize: (size: { width: number; height: number }) => {
@@ -93,14 +100,15 @@ const buildEditor = ({
 
       workspace?.set(size);
       autoZoom();
-      // TODO: save
+
+      save();
     },
     changeBackground: (value: string) => {
-        const workspace = getWorkspace();
-        workspace?.set({ fill: value });
-        canvas.renderAll();
+      const workspace = getWorkspace();
+      workspace?.set({ fill: value });
+      canvas.renderAll();
 
-        // TODO: 
+      save();
     },
     enableDrawingMode: () => {
       canvas.discardActiveObject();
@@ -112,6 +120,8 @@ const buildEditor = ({
     disableDrawingMode: () => {
       canvas.isDrawingMode = false;
     },
+    onUndo: () => undo(),
+    onRedo: () => redo(),
     onCopy: () => copy(),
     onPaste: () => paste(),
     changeImageFilter: (value: string) => {
@@ -560,7 +570,7 @@ export const useEditor = ({ clearSelectionCallback }: EditorHookProps) => {
   const [strokeDashArray, setStrokeDashArray] =
     useState<number[]>(STROKE_DASH_ARRAY);
 
-    const { save } = useHistory();
+  const { save, canRedo, canUndo, redo, undo } = useHistory({ canvas });
 
   const { copy, paste } = useClipboard({ canvas });
 
@@ -578,6 +588,11 @@ export const useEditor = ({ clearSelectionCallback }: EditorHookProps) => {
   const editor = useMemo(() => {
     if (canvas) {
       return buildEditor({
+        save,
+        canRedo,
+        canUndo,
+        redo,
+        undo,
         autoZoom,
         copy,
         paste,
@@ -598,6 +613,11 @@ export const useEditor = ({ clearSelectionCallback }: EditorHookProps) => {
 
     return undefined;
   }, [
+    save,
+    canRedo,
+    canUndo,
+    redo,
+    undo,
     autoZoom,
     copy,
     paste,
