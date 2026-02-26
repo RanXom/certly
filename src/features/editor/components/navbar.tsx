@@ -105,7 +105,7 @@ export const Navbar = ({ editor, activeTool, onChangeActiveTool }: NavbarProps) 
             </DropdownMenuTrigger>
             <DropdownMenuContent align="end" className="min-w-60">
               <DropdownMenuItem
-                onClick={() => {}} // TODO: Add functionality
+                onClick={() => editor?.saveJson()}
                 className="flex items-center gap-x-2"
               >
                 <CiFileOn className="size-8" />
@@ -117,7 +117,7 @@ export const Navbar = ({ editor, activeTool, onChangeActiveTool }: NavbarProps) 
                 </div>
               </DropdownMenuItem>
               <DropdownMenuItem
-                onClick={() => {}} // TODO: Add functionality
+                onClick={() => editor?.savePng()}
                 className="flex items-center gap-x-2"
               >
                 <CiFileOn className="size-8" />
@@ -129,7 +129,7 @@ export const Navbar = ({ editor, activeTool, onChangeActiveTool }: NavbarProps) 
                 </div>
               </DropdownMenuItem>
               <DropdownMenuItem
-                onClick={() => {}} // TODO: Add functionality
+                onClick={() => editor?.saveJpg()}
                 className="flex items-center gap-x-2"
               >
                 <CiFileOn className="size-8" />
@@ -141,7 +141,7 @@ export const Navbar = ({ editor, activeTool, onChangeActiveTool }: NavbarProps) 
                 </div>
               </DropdownMenuItem>
               <DropdownMenuItem
-                onClick={() => {}} // TODO: Add functionality
+                onClick={() => editor?.saveSvg()}
                 className="flex items-center gap-x-2"
               >
                 <CiFileOn className="size-8" />
