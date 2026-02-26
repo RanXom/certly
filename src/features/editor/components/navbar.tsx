@@ -170,6 +170,18 @@ export const Navbar = ({
                   </p>
                 </div>
               </DropdownMenuItem>
+              <DropdownMenuItem
+                onClick={() => onChangeActiveTool("bulk-export")}
+                className="flex items-center gap-x-2"
+              >
+                <CiFileOn className="size-8" />
+                <div>
+                  <p>Bulk Export</p>
+                  <p className="text-xs text-muted-foreground">
+                    Batch export from CSV
+                  </p>
+                </div>
+              </DropdownMenuItem>
             </DropdownMenuContent>
           </DropdownMenu>
         </div>

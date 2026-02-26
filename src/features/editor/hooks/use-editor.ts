@@ -32,6 +32,7 @@ import {
 import { useClipboard } from "@/features/editor/hooks/use-clipboard";
 import { useHistory } from "@/features/editor/hooks/use-history";
 import { useHotkeys } from "@/features/editor/hooks/use-hotkeys";
+import JSZip from "jszip";
 import { useWindowEvents } from "@/features/editor/hooks/use-window-events";
 
 const buildEditor = ({
@@ -134,6 +135,91 @@ const buildEditor = ({
     });
   };
 
+  const saveBulk = async (data: any[], format: "png" | "jpg" | "svg") => {
+    canvas.setViewportTransform([1, 0, 0, 1, 0, 0]);
+    const zip = new JSZip();
+    const { width, height, left, top } = getWorkspace() as fabric.Rect;
+
+    const exportOptions = {
+      name: "Image",
+      format: format === "jpg" ? "jpeg" : format,
+      quality: 1,
+      width,
+      height,
+      left,
+      top,
+    };
+
+    // Find all text objects that we might need to modify
+    const objects = canvas.getObjects();
+    const textObjects = objects.filter((obj) => isTextType(obj.type)) as fabric.Textbox[];
+
+    // Store original texts to restore them later
+    const originalTexts = new Map<fabric.Textbox, string>();
+    textObjects.forEach((obj) => {
+      if (obj.text) originalTexts.set(obj, obj.text);
+    });
+
+    for (let i = 0; i < data.length; i++) {
+      const row = data[i];
+
+      // Replace text in each text object
+      textObjects.forEach((obj) => {
+        const originalText = originalTexts.get(obj);
+        if (!originalText) return;
+
+        // Simple regex to replace {{variableName}} with row data
+        let newText = originalText;
+        Object.keys(row).forEach((key) => {
+          const regex = new RegExp(`{{${key}}}`, "g");
+          newText = newText.replace(regex, row[key] || "");
+        });
+
+        // Update text object
+        obj.set({ text: newText });
+      });
+
+      // Re-render canvas with new text
+      canvas.renderAll();
+
+      // Export this frame
+      if (format === "svg") {
+        const svgStr = canvas.toSVG({
+          width,
+          height,
+          viewBox: { x: left || 0, y: top || 0, width: width || 0, height: height || 0 },
+        });
+        zip.file(`${i + 1}.svg`, svgStr);
+      } else {
+        const dataUrl = canvas.toDataURL(exportOptions);
+        // Extract base64 part
+        const base64 = dataUrl.split(',')[1];
+        zip.file(`${i + 1}.${format}`, base64, { base64: true });
+      }
+    }
+
+    // Restore original templates
+    textObjects.forEach((obj) => {
+      const originalText = originalTexts.get(obj);
+      if (originalText) {
+        obj.set({ text: originalText });
+      }
+    });
+
+    canvas.renderAll();
+
+    // Generate zip file and download
+    const blob = await zip.generateAsync({ type: "blob" });
+    const url = URL.createObjectURL(blob);
+    const a = document.createElement("a");
+    a.href = url;
+    a.download = "bulk-export.zip";
+    a.click();
+    URL.revokeObjectURL(url);
+
+    autoZoom();
+  };
+
   const getWorkspace = () => {
     return canvas.getObjects().find((object) => object.name === "clip");
   };
@@ -159,6 +245,7 @@ const buildEditor = ({
     saveSvg,
     saveJpg,
     saveJson,
+    saveBulk,
     loadJson,
     canUndo,
     canRedo,

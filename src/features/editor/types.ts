@@ -115,7 +115,8 @@ export type ActiveTool =
   | "opacity"
   | "filter"
   | "settings"
-  | "templates";
+  | "templates"
+  | "bulk-export";
 
 export const FILL_COLOR = "rgba(0,0,0,1)";
 export const STROKE_COLOR = "rgba(0,0,0,1)";
@@ -208,6 +209,7 @@ export interface Editor {
   saveSvg: () => void;
   saveJpg: () => void;
   saveJson: () => void;
+  saveBulk: (data: any[], format: "png" | "jpg" | "svg") => Promise<void>;
   loadJson: (json: string) => void;
   onUndo: () => void;
   onRedo: () => void;
