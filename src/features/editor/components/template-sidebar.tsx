@@ -70,39 +70,42 @@ export const TemplateSidebar = ({
                     <Loader className="size-4 text-muted-foreground animate-spin" />
                 </div>
             )}
-            <ScrollArea>
-                <div className="p-4">
-                    <div className="grid grid-cols-2 gap-4">
-                        {TEMPLATES.map((template) => {
-                            return (
-                                <button
-                                    style={{
-                                        aspectRatio: "1.414/1" // A4 landscape aspect ratio approx
-                                    }}
-                                    onClick={() => onClick(template)}
-                                    key={template.id}
-                                    className="relative w-full group hover:opacity-75 transition bg-muted rounded-sm overflow-hidden border"
-                                >
-                                    <Image
-                                        fill
-                                        src={template.image}
-                                        alt={template.name}
-                                        className="object-cover"
-                                    />
-                                    {template.isPro && (
-                                        <div className="absolute top-2 right-2 size-8 items-center flex justify-center bg-black/50 rounded-full">
-                                            <Crown className="size-4 fill-yellow-500 text-yellow-500" />
+            {!isLoading && (
+                <ScrollArea>
+                    <div className="p-4">
+                        <div className="grid grid-cols-2 gap-4">
+                            {TEMPLATES.map((template) => {
+                                return (
+                                    <button
+                                        style={{
+                                            aspectRatio: "1.414/1" // A4 landscape aspect ratio approx
+                                        }}
+                                        onClick={() => onClick(template)}
+                                        key={template.id}
+                                        className="relative w-full group hover:opacity-75 transition bg-muted rounded-sm overflow-hidden border"
+                                    >
+                                        <Image
+                                            fill
+                                            src={template.image}
+                                            alt={template.name}
+                                            className="object-cover"
+                                        />
+                                        {template.isPro && (
+                                            <div className="absolute top-2 right-2 size-8 items-center flex justify-center bg-black/50 rounded-full">
+                                                <Crown className="size-4 fill-yellow-500 text-yellow-500" />
+                                            </div>
+                                        )}
+                                        <div className="opacity-0 group-hover:opacity-100 absolute left-0 bottom-0 w-full text-[10px] truncate text-white hover:underline p-1 bg-black/50 text-left">
+                                            {template.name}
                                         </div>
-                                    )}
-                                    <div className="opacity-0 group-hover:opacity-100 absolute left-0 bottom-0 w-full text-[10px] truncate text-white hover:underline p-1 bg-black/50 text-left">
-                                        {template.name}
-                                    </div>
-                                </button>
-                            );
-                        })}
+                                    </button>
+                                );
+                            })}
+                        </div>
                     </div>
-                </div>
-            </ScrollArea>
+                </ScrollArea>
+
+            )}
             <ToolSidebarClose onClick={onClose} />
         </aside>
     );
