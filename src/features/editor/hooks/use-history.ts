@@ -41,6 +41,7 @@ export const useHistory = ({ canvas }: UseHistoryProps) => {
     }
 
     // TODO: Save callback
+    // Save to DB
   }, [canvas]);
 
   const undo = useCallback(() => {
