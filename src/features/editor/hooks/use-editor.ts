@@ -686,19 +686,7 @@ const buildEditor = ({
 
       return value;
     },
-    getActiveFontWeight: () => {
-      const selectedObject = selectedObjects[0];
 
-      if (!selectedObject) {
-        return FONT_WEIGHT;
-      }
-
-      // @ts-ignore
-      // Faulty TS library, font family exists
-      const value = selectedObject.get("fontWeight") || FONT_WEIGHT;
-
-      return value;
-    },
     getActiveStrokeColor: () => {
       const selectedObject = selectedObjects[0];
 
