@@ -11,7 +11,7 @@ export interface HintProps {
   side?: "top" | "bottom" | "left" | "right";
   align?: "start" | "center" | "end";
   sideOffset?: number;
-  alignOffset: number;
+  alignOffset?: number;
 }
 
 export const Hint = ({
