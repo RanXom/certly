@@ -836,6 +836,7 @@ export const useEditor = ({ clearSelectionCallback }: EditorHookProps) => {
         borderOpacityWhenMoving: 1,
         cornerStrokeColor: "#3b82f6",
       });
+      fabric.Object.prototype.objectCaching = false;
 
       const initialWorkspace = new fabric.Rect({
         width: 1200,

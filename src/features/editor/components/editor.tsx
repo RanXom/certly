@@ -61,6 +61,7 @@ export const Editor = () => {
     const canvas = new fabric.Canvas(canvasRef.current, {
       controlsAboveOverlay: true,
       preserveObjectStacking: true,
+      enableRetinaScaling: true,
     });
 
     init({
