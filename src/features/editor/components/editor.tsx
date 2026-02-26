@@ -21,6 +21,7 @@ import { FilterSidebar } from "@/features/editor/components/filter-sidebar";
 import { DrawSidebar } from "./draw-sidebar";
 import { SettingsSidebar } from "./settings-sidebar";
 import { BulkExportSidebar } from "./bulk-export-sidebar";
+import { TemplateSidebar } from "@/features/editor/components/template-sidebar";
 
 export const Editor = () => {
   const [activeTool, setActiveTool] = useState<ActiveTool>("select");
@@ -84,6 +85,11 @@ export const Editor = () => {
       />
       <div className="absolute h-[calc(100%-68px)] w-full top-[68px] flex">
         <Sidebar
+          activeTool={activeTool}
+          onChangeActiveTool={onChangeActiveTool}
+        />
+        <TemplateSidebar
+          editor={editor}
           activeTool={activeTool}
           onChangeActiveTool={onChangeActiveTool}
         />
