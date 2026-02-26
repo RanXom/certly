@@ -32,6 +32,7 @@ import {
 import { useClipboard } from "@/features/editor/hooks/use-clipboard";
 import { useHistory } from "@/features/editor/hooks/use-history";
 import { useHotkeys } from "@/features/editor/hooks/use-hotkeys";
+import { useWindowEvents } from "@/features/editor/hooks/use-window-events";
 
 const buildEditor = ({
   save,
@@ -659,6 +660,8 @@ export const useEditor = ({ clearSelectionCallback }: EditorHookProps) => {
   const [strokeWidth, setStrokeWidth] = useState(STROKE_WIDTH);
   const [strokeDashArray, setStrokeDashArray] =
     useState<number[]>(STROKE_DASH_ARRAY);
+
+  useWindowEvents();
 
   const { save, canRedo, canUndo, redo, undo } = useHistory({ canvas });
 

@@ -33,7 +33,11 @@ interface NavbarProps {
   onChangeActiveTool: (tool: ActiveTool) => void;
 }
 
-export const Navbar = ({ editor, activeTool, onChangeActiveTool }: NavbarProps) => {
+export const Navbar = ({
+  editor,
+  activeTool,
+  onChangeActiveTool,
+}: NavbarProps) => {
   const { openFilePicker } = useFilePicker({
     accept: ".json",
     onFilesSuccessfullySelected: ({ plainFiles }: any) => {
