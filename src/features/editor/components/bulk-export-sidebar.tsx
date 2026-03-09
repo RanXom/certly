@@ -1,15 +1,17 @@
 import { useState, useRef } from "react";
 import Papa from "papaparse";
-import { Download, Upload } from "lucide-react";
+import { Download, Upload, Mail } from "lucide-react";
+import { toast } from "sonner";
 
 import { ActiveTool, Editor } from "@/features/editor/types";
 import { ToolSidebarHeader } from "@/features/editor/components/tool-sidebar-header";
 import { ToolSidebarClose } from "@/features/editor/components/tool-sidebar-close";
 
-import { ScrollArea } from "@/components/ui/scroll-area";
+
 import { cn } from "@/lib/utils";
 import { Button } from "@/components/ui/button";
 import { Label } from "@/components/ui/label";
+import { Input } from "@/components/ui/input";
 import {
     Select,
     SelectContent,
@@ -34,6 +36,13 @@ export const BulkExportSidebar = ({
     const [parsedData, setParsedData] = useState<any[]>([]);
     const [format, setFormat] = useState<"png" | "jpg" | "svg">("png");
     const [isExporting, setIsExporting] = useState(false);
+
+    // Email bulk states
+    const [emailColumn, setEmailColumn] = useState<string>("");
+    const [emailSubject, setEmailSubject] = useState<string>("Your Certificate");
+    const [emailBody, setEmailBody] = useState<string>("Here is your generated certificate!");
+    const [isEmailing, setIsEmailing] = useState(false);
+
     const fileInputRef = useRef<HTMLInputElement>(null);
 
     const onClose = () => {
@@ -51,6 +60,10 @@ export const BulkExportSidebar = ({
                 if (results.meta.fields) {
                     setFields(results.meta.fields);
                     setParsedData(results.data);
+
+                    // Auto-detect email field
+                    const emailField = results.meta.fields.find(f => f.toLowerCase().includes("email"));
+                    if (emailField) setEmailColumn(emailField);
                 }
             },
             error: (error) => {
@@ -75,6 +88,29 @@ export const BulkExportSidebar = ({
         setIsExporting(false);
     };
 
+    const handleEmail = async () => {
+        if (!editor || parsedData.length === 0 || !emailColumn) return;
+        setIsEmailing(true);
+        const result = await editor.emailBulk(parsedData, emailColumn, emailSubject, emailBody, format);
+        setIsEmailing(false);
+
+        if (result) {
+            if (result.failed === 0) {
+                toast.success(`Successfully sent ${result.success} emails!`, {
+                    duration: 4000,
+                });
+            } else if (result.success === 0) {
+                toast.error(`Failed to send ${result.failed} emails.`, {
+                    duration: 4000,
+                });
+            } else {
+                toast.warning(`Sent ${result.success} emails, but ${result.failed} failed.`, {
+                    duration: 4000,
+                });
+            }
+        }
+    };
+
     return (
         <aside
             className={cn(
@@ -84,10 +120,10 @@ export const BulkExportSidebar = ({
         >
             <ToolSidebarHeader
                 title="Bulk Export"
-                description="Generate multiple variations of your design using a CSV file."
+                description="Generate bulk certificatees using a CSV file."
             />
 
-            <ScrollArea className="flex-1">
+            <div className="flex-1 overflow-y-auto">
                 <div className="p-4 space-y-6">
                     <div className="space-y-4">
                         <h3 className="text-sm font-medium">1. Upload Data</h3>
@@ -167,14 +203,66 @@ export const BulkExportSidebar = ({
                         <Button
                             onClick={handleExport}
                             className="w-full"
-                            disabled={parsedData.length === 0 || isExporting}
+                            disabled={parsedData.length === 0 || isExporting || isEmailing}
+                            variant="outline"
                         >
                             {isExporting ? "Generating Zip..." : "Export Zip"}
                             {!isExporting && <Download className="size-4 ml-2" />}
                         </Button>
                     </div>
+
+                    <Separator />
+
+                    <div className="space-y-4">
+                        <h3 className="text-sm font-medium">4. Send Emails</h3>
+                        <p className="text-xs text-muted-foreground">
+                            Automatically generate and email certificates.
+                        </p>
+
+                        <div className="space-y-2">
+                            <Label>Email Column</Label>
+                            <Select value={emailColumn} onValueChange={setEmailColumn}>
+                                <SelectTrigger>
+                                    <SelectValue placeholder="Select email column" />
+                                </SelectTrigger>
+                                <SelectContent>
+                                    {fields.map((field) => (
+                                        <SelectItem key={field} value={field}>{field}</SelectItem>
+                                    ))}
+                                </SelectContent>
+                            </Select>
+                        </div>
+
+                        <div className="space-y-2">
+                            <Label>Subject</Label>
+                            <Input
+                                value={emailSubject}
+                                onChange={(e) => setEmailSubject(e.target.value)}
+                                placeholder="Email Subject"
+                            />
+                        </div>
+
+                        <div className="space-y-2">
+                            <Label>Body</Label>
+                            <textarea
+                                value={emailBody}
+                                onChange={(e) => setEmailBody(e.target.value)}
+                                placeholder="Email Body"
+                                className="flex w-full rounded-md border border-input bg-transparent px-3 py-2 text-sm shadow-sm placeholder:text-muted-foreground focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-ring disabled:cursor-not-allowed disabled:opacity-50 min-h-[80px]"
+                            />
+                        </div>
+
+                        <Button
+                            onClick={handleEmail}
+                            className="w-full"
+                            disabled={parsedData.length === 0 || isEmailing || isExporting || !emailColumn}
+                        >
+                            {isEmailing ? "Sending Emails..." : "Send Emails"}
+                            {!isEmailing && <Mail className="size-4 ml-2" />}
+                        </Button>
+                    </div>
                 </div>
-            </ScrollArea>
+            </div>
 
             <ToolSidebarClose onClick={onClose} />
         </aside>

@@ -220,6 +220,106 @@ const buildEditor = ({
     autoZoom();
   };
 
+  const emailBulk = async (data: any[], emailColumn: string, subject: string, body: string, format: "png" | "jpg" | "svg") => {
+    canvas.setViewportTransform([1, 0, 0, 1, 0, 0]);
+    const { width, height, left, top } = getWorkspace() as fabric.Rect;
+
+    const exportOptions = {
+      name: "Image",
+      format: format === "jpg" ? "jpeg" : format,
+      quality: 1,
+      width,
+      height,
+      left,
+      top,
+    };
+
+    const objects = canvas.getObjects();
+    const textObjects = objects.filter((obj) => isTextType(obj.type)) as fabric.Textbox[];
+
+    const originalTexts = new Map<fabric.Textbox, string>();
+    textObjects.forEach((obj) => {
+      if (obj.text) originalTexts.set(obj, obj.text);
+    });
+
+    const generatedEmails: { emailTo: string, attachmentBase64: string, attachmentName: string }[] = [];
+
+    for (let i = 0; i < data.length; i++) {
+      const row = data[i];
+      const emailTo = row[emailColumn];
+
+      if (!emailTo) continue;
+
+      textObjects.forEach((obj) => {
+        const originalText = originalTexts.get(obj);
+        if (!originalText) return;
+
+        let newText = originalText;
+        Object.keys(row).forEach((key) => {
+          const regex = new RegExp(`{{${key}}}`, "g");
+          newText = newText.replace(regex, row[key] || "");
+        });
+
+        obj.set({ text: newText });
+      });
+
+      canvas.renderAll();
+
+      let attachmentBase64 = "";
+      let attachmentName = `certificate-${i + 1}.${format}`;
+
+      if (format === "svg") {
+        const svgStr = canvas.toSVG({
+          width,
+          height,
+          viewBox: { x: left || 0, y: top || 0, width: width || 0, height: height || 0 },
+        });
+        attachmentBase64 = Buffer.from(svgStr).toString("base64");
+      } else {
+        const dataUrl = canvas.toDataURL(exportOptions);
+        attachmentBase64 = dataUrl.split(',')[1];
+      }
+
+      generatedEmails.push({ emailTo, attachmentBase64, attachmentName });
+    }
+
+    // Restore text
+    textObjects.forEach((obj) => {
+      const originalText = originalTexts.get(obj);
+      if (originalText) {
+        obj.set({ text: originalText });
+      }
+    });
+
+    canvas.renderAll();
+    autoZoom();
+
+    // Send Email POSTs asynchronously
+    let success = 0;
+    let failed = 0;
+    for (const { emailTo, attachmentBase64, attachmentName } of generatedEmails) {
+      try {
+        const res = await fetch("/api/emails", {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({
+            to: emailTo,
+            subject,
+            body,
+            attachmentBase64,
+            attachmentName
+          })
+        });
+        if (res.ok) success++;
+        else failed++;
+      } catch (error) {
+        console.error("Bulk Email Error for", emailTo, error);
+        failed++;
+      }
+    }
+    return { success, failed };
+  };
+
   const getWorkspace = () => {
     return canvas.getObjects().find((object) => object.name === "clip");
   };
@@ -246,6 +346,7 @@ const buildEditor = ({
     saveJpg,
     saveJson,
     saveBulk,
+    emailBulk,
     loadJson,
     canUndo,
     canRedo,

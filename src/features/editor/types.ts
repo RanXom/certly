@@ -210,6 +210,7 @@ export interface Editor {
   saveJpg: () => void;
   saveJson: () => void;
   saveBulk: (data: any[], format: "png" | "jpg" | "svg") => Promise<void>;
+  emailBulk: (data: any[], emailColumn: string, subject: string, body: string, format: "png" | "jpg" | "svg") => Promise<{ success: number; failed: number }>;
   loadJson: (json: string) => void;
   onUndo: () => void;
   onRedo: () => void;
