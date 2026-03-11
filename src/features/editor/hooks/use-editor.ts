@@ -220,7 +220,7 @@ const buildEditor = ({
     autoZoom();
   };
 
-  const emailBulk = async (data: any[], emailColumn: string, subject: string, body: string, format: "png" | "jpg" | "svg") => {
+  const emailBulk = async (data: any[], emailColumn: string, senderName: string, subject: string, body: string, format: "png" | "jpg" | "svg") => {
     canvas.setViewportTransform([1, 0, 0, 1, 0, 0]);
     const { width, height, left, top } = getWorkspace() as fabric.Rect;
 
@@ -304,6 +304,7 @@ const buildEditor = ({
           headers: { "Content-Type": "application/json" },
           body: JSON.stringify({
             to: emailTo,
+            senderName,
             subject,
             body,
             attachmentBase64,

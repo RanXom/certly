@@ -11,6 +11,7 @@ const app = new Hono().post(
         "json",
         z.object({
             to: z.string().email(),
+            senderName: z.string().optional(),
             subject: z.string().min(1),
             body: z.string().min(1),
             attachmentBase64: z.string().min(1),
@@ -18,16 +19,20 @@ const app = new Hono().post(
         })
     ),
     async (c) => {
-        const { to, subject, body, attachmentBase64, attachmentName } = c.req.valid("json");
+        const { to, senderName, subject, body, attachmentBase64, attachmentName } = c.req.valid("json");
+
+        const formattedName = senderName && senderName.trim() ? senderName.trim() : "Certly";
+        const emailSlug = senderName && senderName.trim() ? senderName.trim().toLowerCase().replace(/\s+/g, '') : "certly";
+        const fromAddress = `${formattedName} <${emailSlug}@shizain.xyz>`;
 
         if (!process.env.RESEND_API_KEY) {
-            console.warn(`[Mock Email] Sent to ${to} with subject "${subject}". Attachment: ${attachmentName}`);
+            console.warn(`[Mock Email] Sent to ${to} from ${fromAddress} with subject "${subject}". Attachment: ${attachmentName}`);
             return c.json({ data: { message: "Mock email sent" } });
         }
 
         try {
             const data = await resend.emails.send({
-                from: "COER University <coeruniversity@shizain.xyz>",
+                from: fromAddress,
                 to: [to],
                 subject: subject,
                 html: `<p>${body.replace(/\n/g, '<br />')}</p>`,

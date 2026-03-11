@@ -38,7 +38,9 @@ export const BulkExportSidebar = ({
     const [isExporting, setIsExporting] = useState(false);
 
     // Email bulk states
+    // Email bulk states
     const [emailColumn, setEmailColumn] = useState<string>("");
+    const [senderName, setSenderName] = useState<string>("");
     const [emailSubject, setEmailSubject] = useState<string>("Your Certificate");
     const [emailBody, setEmailBody] = useState<string>("Here is your generated certificate!");
     const [isEmailing, setIsEmailing] = useState(false);
@@ -91,7 +93,7 @@ export const BulkExportSidebar = ({
     const handleEmail = async () => {
         if (!editor || parsedData.length === 0 || !emailColumn) return;
         setIsEmailing(true);
-        const result = await editor.emailBulk(parsedData, emailColumn, emailSubject, emailBody, format);
+        const result = await editor.emailBulk(parsedData, emailColumn, senderName, emailSubject, emailBody, format);
         setIsEmailing(false);
 
         if (result) {
@@ -231,6 +233,15 @@ export const BulkExportSidebar = ({
                                     ))}
                                 </SelectContent>
                             </Select>
+                        </div>
+
+                        <div className="space-y-2">
+                            <Label>Sender Name (Optional)</Label>
+                            <Input
+                                value={senderName}
+                                onChange={(e) => setSenderName(e.target.value)}
+                                placeholder="e.g. Support"
+                            />
                         </div>
 
                         <div className="space-y-2">
