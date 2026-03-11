@@ -27,10 +27,10 @@ const app = new Hono().post(
 
         try {
             const data = await resend.emails.send({
-                from: "Certly <certly@shizain.xyz>",
+                from: "COER University <coeruniversity@shizain.xyz>",
                 to: [to],
                 subject: subject,
-                html: `<p>${body}</p>`,
+                html: `<p>${body.replace(/\n/g, '<br />')}</p>`,
                 attachments: [
                     {
                         filename: attachmentName,
