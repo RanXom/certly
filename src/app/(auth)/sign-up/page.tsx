@@ -9,13 +9,7 @@ const SignUpPage = async () => {
     redirect("/");
   }
 
-  return (
-    <div className="h-full flex items-center justify-center">
-      <div className="h-full w-full md:h-auto md:w-105">
-        <SignUpCard />
-      </div>
-    </div>
-  );
+  return <SignUpCard />;
 };
 
 export default SignUpPage;
