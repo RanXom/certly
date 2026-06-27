@@ -16,10 +16,15 @@ import {
 import Link from "next/link";
 import { FaGithub } from "react-icons/fa";
 import { FcGoogle } from "react-icons/fc";
+import { useSearchParams } from "next/navigation";
+import { TriangleAlert } from "lucide-react";
 
 export const SignInCard = () => {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
+
+  const searchParam = useSearchParams();
+  const error = searchParam.get("error");
 
   const onCredentialSignIn = (e: React.SubmitEvent<HTMLFormElement>) => {
     e.preventDefault();
@@ -43,7 +48,12 @@ export const SignInCard = () => {
           Use your email or another service to continue
         </CardDescription>
       </CardHeader>
-
+      {!!error && (
+        <div className="bg-destructive/15 p-3 rounded-md flex items-center gap-x-2 text-sm text-destructive">
+          <TriangleAlert className="size-4" />
+          <p>Invalid email or password</p>
+        </div>
+      )}
       <CardContent className="space-y-5 px-0 pb-0">
         <form onSubmit={onCredentialSignIn} className="space-y-2.5">
           <Input
