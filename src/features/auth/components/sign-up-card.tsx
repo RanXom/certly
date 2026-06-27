@@ -16,14 +16,31 @@ import {
 import Link from "next/link";
 import { FaGithub } from "react-icons/fa";
 import { FcGoogle } from "react-icons/fc";
+import { useSignUp } from "../hooks/use-sign-up";
 
 export const SignUpCard = () => {
+  const mutation = useSignUp();
+
   const [name, setName] = useState("");
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
 
-  const onCredentialSignUp = (e: React.SubmitEvent<HTMLFormElement>) => {
+  const onCredentialSignUp = (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
+
+    mutation.mutate(
+      {
+        name,
+        email,
+        password,
+      },
+      {
+        onSuccess: () => {
+          // TODO: call signup
+          console.log("registered");
+        },
+      },
+    );
   };
 
   const onProviderSignUp = (provider: "github" | "google") => {
@@ -42,6 +59,7 @@ export const SignUpCard = () => {
       <CardContent className="space-y-5 px-0 pb-0">
         <form onSubmit={onCredentialSignUp} className="space-y-2.5">
           <Input
+            disabled={mutation.isPending}
             value={name}
             onChange={(e) => setName(e.target.value)}
             placeholder="Full Name"
@@ -49,6 +67,7 @@ export const SignUpCard = () => {
             required
           />
           <Input
+            disabled={mutation.isPending}
             value={email}
             onChange={(e) => setEmail(e.target.value)}
             placeholder="Email"
@@ -56,19 +75,28 @@ export const SignUpCard = () => {
             required
           />
           <Input
+            disabled={mutation.isPending}
             value={password}
             onChange={(e) => setPassword(e.target.value)}
             placeholder="Password"
             type="password"
+            minLength={3}
+            maxLength={20}
             required
           />
-          <Button type="submit" className="w-full" size="lg">
+          <Button
+            disabled={mutation.isPending}
+            type="submit"
+            className="w-full"
+            size="lg"
+          >
             Continue
           </Button>
         </form>
         <Separator />
         <div className="flex flex-col gap-y-2.5">
           <Button
+            disabled={mutation.isPending}
             variant="outline"
             size="lg"
             className="w-full relative"
@@ -78,6 +106,7 @@ export const SignUpCard = () => {
             Continue with Google
           </Button>
           <Button
+            disabled={mutation.isPending}
             variant="outline"
             size="lg"
             className="w-full relative"
