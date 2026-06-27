@@ -1,7 +1,11 @@
 "use client";
 
+import { useState } from "react";
+
 import { signIn } from "next-auth/react";
 import { Button } from "@/components/ui/button";
+import { Input } from "@/components/ui/input";
+import { Separator } from "@/components/ui/separator";
 import {
   Card,
   CardContent,
@@ -14,6 +18,19 @@ import { FaGithub } from "react-icons/fa";
 import { FcGoogle } from "react-icons/fc";
 
 export const SignInCard = () => {
+  const [email, setEmail] = useState("");
+  const [password, setPassword] = useState("");
+
+  const onCredentialSignIn = (e: React.SubmitEvent<HTMLFormElement>) => {
+    e.preventDefault();
+
+    signIn("credentials", {
+      email: email,
+      password: password,
+      callbackUrl: "/",
+    });
+  };
+
   const onProviderSignIn = (provider: "github" | "google") => {
     signIn(provider, { redirectTo: "/" });
   };
@@ -28,6 +45,26 @@ export const SignInCard = () => {
       </CardHeader>
 
       <CardContent className="space-y-5 px-0 pb-0">
+        <form onSubmit={onCredentialSignIn} className="space-y-2.5">
+          <Input
+            value={email}
+            onChange={(e) => setEmail(e.target.value)}
+            placeholder="Email"
+            type="email"
+            required
+          />
+          <Input
+            value={password}
+            onChange={(e) => setPassword(e.target.value)}
+            placeholder="Password"
+            type="password"
+            required
+          />
+          <Button type="submit" className="w-full" size="lg">
+            Continue
+          </Button>
+        </form>
+        <Separator />
         <div className="flex flex-col gap-y-2.5">
           <Button
             variant="outline"

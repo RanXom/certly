@@ -2,7 +2,6 @@
 @import "tw-animate-css";
 @import "shadcn/tailwind.css";
 
-
 @import "uploadthing/tw/v4";
 @source "../../node_modules/@uploadthing/react/dist";
 
@@ -132,6 +131,10 @@ body {
   body {
     @apply bg-background text-foreground;
   }
+  button:not(:disabled),
+  [role="button"]:not(:disabled) {
+    cursor: pointer;
+  }
 }
 
 .circle-picker {
@@ -144,3 +147,4 @@ body {
   border-radius: 0.5rem !important;
   overflow: hidden !important;
 }
+
