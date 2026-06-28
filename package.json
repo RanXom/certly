@@ -12,7 +12,9 @@
     "db:studio": "npx drizzle-kit studio"
   },
   "dependencies": {
+    "@auth/core": "^0.41.2",
     "@auth/drizzle-adapter": "^1.11.2",
+    "@hono/auth-js": "^1.1.1",
     "@hono/zod-validator": "^0.7.6",
     "@neondatabase/serverless": "^1.1.0",
     "@tanstack/react-query": "^5.90.21",
@@ -23,7 +25,7 @@
     "dotenv": "^17.4.2",
     "drizzle-orm": "^0.45.2",
     "fabric": "^5.3.0-browser",
-    "hono": "^4.12.0",
+    "hono": "^4.12.27",
     "jszip": "^3.10.1",
     "lucide-react": "^0.563.0",
     "material-colors": "^1.2.6",
