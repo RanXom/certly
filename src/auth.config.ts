@@ -86,11 +86,36 @@ export default {
         session.user.id = token.id;
       }
 
+      if (token.name) {
+        session.user.name = token.name;
+      }
+
+      if (token.email) {
+        session.user.email = token.email;
+      }
+
+      if (token.picture) {
+        session.user.image = token.picture;
+      }
+
       return session;
     },
-    jwt({ token, user }) {
+    async jwt({ token, user, trigger }) {
       if (user) {
         token.id = user.id;
+      }
+
+      if (trigger === "update" && token.id) {
+        const [dbUser] = await db
+          .select()
+          .from(users)
+          .where(eq(users.id, token.id));
+
+        if (dbUser) {
+          token.name = dbUser.name;
+          token.email = dbUser.email;
+          token.picture = dbUser.image;
+        }
       }
 
       return token;
