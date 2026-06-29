@@ -1,8 +1,9 @@
 import type { Metadata } from "next";
 import { Geist, Geist_Mono } from "next/font/google";
+import { SessionProvider } from "next-auth/react";
 
+import { auth } from "@/auth";
 import { Toaster } from "@/components/ui/sonner";
-
 import { Providers } from "@/components/providers";
 
 import "./globals.css";
@@ -22,21 +23,25 @@ export const metadata: Metadata = {
   description: "Design official certificates in bulk. ",
 };
 
-export default function RootLayout({
+export default async function RootLayout({
   children,
 }: Readonly<{
   children: React.ReactNode;
 }>) {
+  const session = await auth();
+
   return (
-    <html lang="en">
-      <body
-        className={`${geistSans.variable} ${geistMono.variable} antialiased`}
-      >
-        <Providers>
-          <Toaster />
-          {children}
-        </Providers>
-      </body>
-    </html>
+    <SessionProvider session={session}>
+      <html lang="en">
+        <body
+          className={`${geistSans.variable} ${geistMono.variable} antialiased`}
+        >
+          <Providers>
+            <Toaster />
+            {children}
+          </Providers>
+        </body>
+      </html>
+    </SessionProvider>
   );
 }

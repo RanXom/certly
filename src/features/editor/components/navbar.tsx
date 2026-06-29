@@ -26,6 +26,7 @@ import { Separator } from "@/components/ui/separator";
 import { BsCloudCheck } from "react-icons/bs";
 import { ActiveTool, Editor } from "@/features/editor/types";
 import { cn } from "@/lib/utils";
+import { UserButton } from "@/features/auth/components/user-button";
 
 interface NavbarProps {
   editor: Editor | undefined;
@@ -52,7 +53,7 @@ export const Navbar = ({
     },
   });
   return (
-    <nav className="w-full flex items-center p-4 h-[68px] gap-x-8 border-b lg:pl-[34px]">
+    <nav className="w-full flex items-center p-4 h-17 gap-x-8 border-b lg:pl-8.5">
       <Logo />
       <div className="w-full flex items-center gap-x-1 h-full">
         <DropdownMenu modal={false}>
@@ -110,7 +111,7 @@ export const Navbar = ({
         </Hint>
         <Separator orientation="vertical" className="mx-2" />
         <div className="flex items-center gap-x-2">
-          <BsCloudCheck className="size-[20px] text-muted-foreground" />
+          <BsCloudCheck className="size-5 text-muted-foreground" />
           <div className="text-xs text-muted-foreground">Saved</div>
         </div>
         <div className="ml-auto flex items-center gap-x-4">
@@ -184,6 +185,7 @@ export const Navbar = ({
               </DropdownMenuItem>
             </DropdownMenuContent>
           </DropdownMenu>
+          <UserButton />
         </div>
       </div>
     </nav>
