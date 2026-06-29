@@ -1,0 +1,16 @@
+interface AuthLayoutProps {
+  children: React.ReactNode;
+}
+
+const AuthLayout = ({ children }: AuthLayoutProps) => {
+  return (
+    <div className="bg-[url(/bg.png)] bg-top bg-cover h-full flex flex-col">
+      <div className="z-4 h-full w-full flex flex-col items-center justify-center">
+        <div className="h-full w-full md:h-auto md:w-105">{children}</div>
+      </div>
+      <div className="fixed inset-0 bg-[linear-gradient(180deg,rgba(0,0,0,0.6),rgba(0,0,0,0.2),rgba(0,0,0,0.6))] z-1" />
+    </div>
+  );
+};
+
+export default AuthLayout;
