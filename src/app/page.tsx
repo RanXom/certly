@@ -31,8 +31,8 @@ export default async function Home() {
           </span>
         </div>
         <div className="flex items-center gap-x-4">
-          <Link href="/sign-up">
-            <Button className="rounded-full shadow-lg hover:shadow-xl transition-all duration-300 hover:-translate-y-0.5 bg-gradient-to-r from-blue-600 to-indigo-600 hover:from-blue-700 hover:to-indigo-700 text-white border-0">
+          <Link href="/sign-in">
+            <Button className="rounded-full shadow-lg hover:shadow-xl transition-all duration-300 hover:-translate-y-0.5 bg-gradient-to-r from-blue-600 to-blue-500 hover:from-blue-700 hover:to-blue-600 transition text-white border-0">
               Sign In
             </Button>
           </Link>
@@ -69,7 +69,7 @@ export default async function Home() {
           <Link href="/sign-up">
             <Button
               size="lg"
-              className="h-14 px-8 text-lg font-semibold rounded-full shadow-xl hover:shadow-2xl transition-all duration-300 hover:-translate-y-1 bg-gradient-to-r from-blue-600 to-indigo-600 hover:from-blue-700 hover:to-indigo-700 text-white border-0 flex items-center gap-2 group"
+              className="h-14 px-8 text-lg font-semibold rounded-full shadow-xl hover:shadow-2xl transition-all duration-300 hover:-translate-y-1 bg-gradient-to-r from-blue-600 to-indigo-600 hover:from-blue-700 hover:to-indigo-700 transition text-white border-0 flex items-center gap-2 group"
             >
               Start Designing
               <ArrowRight className="size-5 group-hover:translate-x-1 transition-transform" />
