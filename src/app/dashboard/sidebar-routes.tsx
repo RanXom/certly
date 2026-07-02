@@ -2,7 +2,13 @@
 
 import { Button } from "@/components/ui/button";
 import { Separator } from "@/components/ui/separator";
-import { Crown, Folder, Home, MessageCircleQuestion } from "lucide-react";
+import {
+  CreditCard,
+  Crown,
+  Folder,
+  Home,
+  MessageCircleQuestion,
+} from "lucide-react";
 import { SidebarItem } from "@/app/dashboard/sidebar-item";
 import { usePathname } from "next/navigation";
 
@@ -44,7 +50,13 @@ export const SidebarRoutes = () => {
       </div>
       <ul className="flex flex-col gap-y-1 px-3">
         <SidebarItem
-          href="mailto:contact@certly.studio"
+          href={pathname}
+          icon={CreditCard}
+          label="Billing"
+          onClick={() => {}}
+        />
+        <SidebarItem
+          href="mailto:contact@shizain.me"
           icon={MessageCircleQuestion}
           label="Get Help"
         />

@@ -15,7 +15,6 @@ export default async function Home() {
 
   return (
     <div className="relative h-screen bg-[#fafafa] flex flex-col overflow-hidden selection:bg-blue-200">
-
       {/* Decorative Background Elements (Extended to cover full page, animations removed) */}
       <div className="absolute inset-0 overflow-hidden pointer-events-none z-0">
         <div className="absolute -top-[20%] -left-[10%] w-[60%] h-[60%] rounded-full bg-gradient-to-br from-blue-400/30 to-purple-400/30 blur-3xl" />
@@ -27,17 +26,14 @@ export default async function Home() {
       <nav className="relative z-10 flex items-center justify-between px-6 py-4 md:px-12 lg:px-24 bg-white/50 backdrop-blur-md border-b border-gray-200/50">
         <div className="flex items-center gap-x-2">
           <Logo />
-          <span className="text-xl font-bold tracking-tight bg-gradient-to-r from-gray-900 to-gray-600 bg-clip-text text-transparent">Certly</span>
+          <span className="text-xl font-bold tracking-tight bg-gradient-to-r from-gray-900 to-gray-600 bg-clip-text text-transparent">
+            Certly
+          </span>
         </div>
         <div className="flex items-center gap-x-4">
-          <Link href="/sign-in">
-            <Button variant="ghost" className="rounded-full font-medium text-gray-700 hover:text-gray-900">
-              Sign In
-            </Button>
-          </Link>
           <Link href="/sign-up">
             <Button className="rounded-full shadow-lg hover:shadow-xl transition-all duration-300 hover:-translate-y-0.5 bg-gradient-to-r from-blue-600 to-indigo-600 hover:from-blue-700 hover:to-indigo-700 text-white border-0">
-              Get Started
+              Sign In
             </Button>
           </Link>
         </div>
@@ -45,11 +41,12 @@ export default async function Home() {
 
       {/* Hero Section (Centered vertically and horizontally) */}
       <main className="relative z-10 flex-1 flex flex-col items-center justify-center px-4 sm:px-6 lg:px-8 w-full max-w-7xl mx-auto">
-
         {/* Badge */}
         <div className="mb-8 inline-flex items-center gap-2 px-4 py-2 rounded-full bg-white/80 border border-gray-200 shadow-sm">
           <Sparkles className="size-4 text-blue-500" />
-          <span className="text-sm font-medium text-gray-700">The easiest way to design certificates</span>
+          <span className="text-sm font-medium text-gray-700">
+            The easiest way to design certificates
+          </span>
         </div>
 
         {/* Headline */}
@@ -61,14 +58,19 @@ export default async function Home() {
             </span>
           </h1>
           <p className="max-w-2xl mx-auto text-lg md:text-xl text-gray-600 leading-relaxed font-medium">
-            Build beautiful certificates in minutes. Upload a CSV to bulk-export hundreds of personalized designs effortlessly. No design skills required.
+            Build beautiful certificates in minutes. Upload a CSV to bulk-export
+            hundreds of personalized designs effortlessly. No design skills
+            required.
           </p>
         </div>
 
         {/* CTAs */}
         <div className="mt-10 flex flex-col sm:flex-row items-center gap-4">
           <Link href="/sign-up">
-            <Button size="lg" className="h-14 px-8 text-lg font-semibold rounded-full shadow-xl hover:shadow-2xl transition-all duration-300 hover:-translate-y-1 bg-gradient-to-r from-blue-600 to-indigo-600 hover:from-blue-700 hover:to-indigo-700 text-white border-0 flex items-center gap-2 group">
+            <Button
+              size="lg"
+              className="h-14 px-8 text-lg font-semibold rounded-full shadow-xl hover:shadow-2xl transition-all duration-300 hover:-translate-y-1 bg-gradient-to-r from-blue-600 to-indigo-600 hover:from-blue-700 hover:to-indigo-700 text-white border-0 flex items-center gap-2 group"
+            >
               Start Designing
               <ArrowRight className="size-5 group-hover:translate-x-1 transition-transform" />
             </Button>
@@ -81,7 +83,9 @@ export default async function Home() {
             <div className="p-2 rounded-lg bg-blue-100/50 text-blue-600">
               <Layers className="size-5" />
             </div>
-            <span className="font-medium text-gray-700">Drag &amp; Drop Builder</span>
+            <span className="font-medium text-gray-700">
+              Drag &amp; Drop Builder
+            </span>
           </div>
           <div className="flex items-center gap-3">
             <div className="p-2 rounded-lg bg-emerald-100/50 text-emerald-600">
@@ -96,9 +100,7 @@ export default async function Home() {
             <span className="font-medium text-gray-700">Premium Quality</span>
           </div>
         </div>
-
       </main>
-
     </div>
   );
 }
