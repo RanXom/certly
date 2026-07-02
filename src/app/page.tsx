@@ -1,10 +1,18 @@
 import Link from "next/link";
+import { redirect } from "next/navigation";
 import { ArrowRight, Sparkles, Layers, Zap } from "lucide-react";
 
+import { auth } from "@/auth";
 import { Button } from "@/components/ui/button";
 import { Logo } from "@/features/editor/components/logo";
 
-export default function Home() {
+export default async function Home() {
+  const session = await auth();
+
+  if (session) {
+    redirect("/dashboard");
+  }
+
   return (
     <div className="relative h-screen bg-[#fafafa] flex flex-col overflow-hidden selection:bg-blue-200">
 
@@ -22,9 +30,14 @@ export default function Home() {
           <span className="text-xl font-bold tracking-tight bg-gradient-to-r from-gray-900 to-gray-600 bg-clip-text text-transparent">Certly</span>
         </div>
         <div className="flex items-center gap-x-4">
-          <Link href="/editor/1">
+          <Link href="/sign-in">
+            <Button variant="ghost" className="rounded-full font-medium text-gray-700 hover:text-gray-900">
+              Sign In
+            </Button>
+          </Link>
+          <Link href="/sign-up">
             <Button className="rounded-full shadow-lg hover:shadow-xl transition-all duration-300 hover:-translate-y-0.5 bg-gradient-to-r from-blue-600 to-indigo-600 hover:from-blue-700 hover:to-indigo-700 text-white border-0">
-              Go to Editor
+              Get Started
             </Button>
           </Link>
         </div>
@@ -44,7 +57,7 @@ export default function Home() {
           <h1 className="text-5xl md:text-6xl lg:text-7xl font-extrabold tracking-tight text-gray-900 leading-[1.1]">
             Create stunning <br className="hidden md:block" />
             <span className="text-transparent bg-clip-text bg-gradient-to-r from-blue-600 via-indigo-600 to-purple-600">
-              certificates & awards
+              certificates &amp; awards
             </span>
           </h1>
           <p className="max-w-2xl mx-auto text-lg md:text-xl text-gray-600 leading-relaxed font-medium">
@@ -54,7 +67,7 @@ export default function Home() {
 
         {/* CTAs */}
         <div className="mt-10 flex flex-col sm:flex-row items-center gap-4">
-          <Link href="/editor/1">
+          <Link href="/sign-up">
             <Button size="lg" className="h-14 px-8 text-lg font-semibold rounded-full shadow-xl hover:shadow-2xl transition-all duration-300 hover:-translate-y-1 bg-gradient-to-r from-blue-600 to-indigo-600 hover:from-blue-700 hover:to-indigo-700 text-white border-0 flex items-center gap-2 group">
               Start Designing
               <ArrowRight className="size-5 group-hover:translate-x-1 transition-transform" />
@@ -68,7 +81,7 @@ export default function Home() {
             <div className="p-2 rounded-lg bg-blue-100/50 text-blue-600">
               <Layers className="size-5" />
             </div>
-            <span className="font-medium text-gray-700">Drag & Drop Builder</span>
+            <span className="font-medium text-gray-700">Drag &amp; Drop Builder</span>
           </div>
           <div className="flex items-center gap-3">
             <div className="p-2 rounded-lg bg-emerald-100/50 text-emerald-600">

@@ -37,11 +37,10 @@ export const SignUpCard = () => {
       },
       {
         onSuccess: () => {
-          // TODO: Replace "/editor" with "/dashboard" when dashboard is implemented
           signIn("credentials", {
             email,
             password,
-            redirectTo: "/editor/1",
+            redirectTo: "/dashboard",
           });
         },
       },
@@ -49,8 +48,7 @@ export const SignUpCard = () => {
   };
 
   const onProviderSignUp = (provider: "github" | "google") => {
-    // TODO: Replace "/editor" with "/dashboard" when dashboard is implemented
-    signIn(provider, { redirectTo: "/editor/1" });
+    signIn(provider, { redirectTo: "/dashboard" });
   };
 
   return (

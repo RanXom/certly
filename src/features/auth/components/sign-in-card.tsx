@@ -29,17 +29,15 @@ export const SignInCard = () => {
   const onCredentialSignIn = (e: React.SubmitEvent<HTMLFormElement>) => {
     e.preventDefault();
 
-    // TODO: Replace "/editor" with "/dashboard" when dashboard is implemented
     signIn("credentials", {
       email: email,
       password: password,
-      callbackUrl: "/editor/1",
+      callbackUrl: "/dashboard",
     });
   };
 
   const onProviderSignIn = (provider: "github" | "google") => {
-    // TODO: Replace "/editor" with "/dashboard" when dashboard is implemented
-    signIn(provider, { redirectTo: "/editor/1" });
+    signIn(provider, { redirectTo: "/dashboard" });
   };
 
   return (
