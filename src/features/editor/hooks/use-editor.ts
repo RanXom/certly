@@ -294,10 +294,15 @@ const buildEditor = ({
     canvas.renderAll();
     autoZoom();
 
-    // Send Email POSTs asynchronously
+    // Send Email POSTs sequentially
     let success = 0;
     let failed = 0;
+    let rateLimited = false;
     for (const { emailTo, attachmentBase64, attachmentName } of generatedEmails) {
+      if (rateLimited) {
+        failed++;
+        continue;
+      }
       try {
         const res = await fetch("/api/emails", {
           method: "POST",
@@ -311,14 +316,20 @@ const buildEditor = ({
             attachmentName
           })
         });
-        if (res.ok) success++;
-        else failed++;
+        if (res.ok) {
+          success++;
+        } else if (res.status === 429) {
+          rateLimited = true;
+          failed++;
+        } else {
+          failed++;
+        }
       } catch (error) {
         console.error("Bulk Email Error for", emailTo, error);
         failed++;
       }
     }
-    return { success, failed };
+    return { success, failed, rateLimited };
   };
 
   const getWorkspace = () => {

@@ -97,7 +97,14 @@ export const BulkExportSidebar = ({
         setIsEmailing(false);
 
         if (result) {
-            if (result.failed === 0) {
+            if (result.rateLimited) {
+                toast.error(
+                    result.success > 0
+                        ? `Sent ${result.success} emails, but hit the daily limit. Upgrade to Pro for higher limits.`
+                        : `Daily email limit reached. Upgrade to Pro for higher limits.`,
+                    { duration: 6000 }
+                );
+            } else if (result.failed === 0) {
                 toast.success(`Successfully sent ${result.success} emails!`, {
                     duration: 4000,
                 });
