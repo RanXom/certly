@@ -34,6 +34,7 @@ import { useHistory } from "@/features/editor/hooks/use-history";
 import { useHotkeys } from "@/features/editor/hooks/use-hotkeys";
 import JSZip from "jszip";
 import { useWindowEvents } from "@/features/editor/hooks/use-window-events";
+import { UseLoadState } from "./use-load-state";
 
 const buildEditor = ({
   save,
@@ -890,10 +891,11 @@ export const useEditor = ({
 
   useWindowEvents();
 
-  const { save, canRedo, canUndo, redo, undo } = useHistory({
-    canvas,
-    saveCallback,
-  });
+  const { save, canRedo, canUndo, redo, undo, canvasHistory, setHistoryIndex } =
+    useHistory({
+      canvas,
+      saveCallback,
+    });
 
   const { copy, paste } = useClipboard({ canvas });
 
@@ -915,6 +917,14 @@ export const useEditor = ({
     paste,
     save,
     canvas,
+  });
+
+  UseLoadState({
+    canvas,
+    autoZoom,
+    initialState,
+    canvasHistory,
+    setHistoryIndex,
   });
 
   const editor = useMemo(() => {
