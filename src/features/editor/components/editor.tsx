@@ -99,6 +99,7 @@ export const Editor = ({ initialData }: EditorClientProps) => {
     <div className="h-full flex flex-col">
       <FontLoader />
       <Navbar
+        id={initialData.id}
         editor={editor}
         activeTool={activeTool}
         onChangeActiveTool={onChangeActiveTool}
