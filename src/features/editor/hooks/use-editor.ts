@@ -1,5 +1,5 @@
 import { fabric } from "fabric";
-import { useCallback, useMemo, useState } from "react";
+import { useCallback, useMemo, useRef, useState } from "react";
 
 import {
   BuildEditorProps,
@@ -867,9 +867,16 @@ const buildEditor = ({
 };
 
 export const useEditor = ({
+  defaultState,
+  defaultWidth,
+  defaultHeight,
   clearSelectionCallback,
   saveCallback,
 }: EditorHookProps) => {
+  const initialState = useRef(defaultState);
+  const initialWidth = useRef(defaultWidth);
+  const initialHeight = useRef(defaultHeight);
+
   const [canvas, setCanvas] = useState<fabric.Canvas | null>(null);
   const [container, setContainer] = useState<HTMLDivElement | null>(null);
   const [selectedObjects, setSelectedObjects] = useState<fabric.Object[]>([]);
@@ -975,8 +982,8 @@ export const useEditor = ({
       fabric.Object.prototype.objectCaching = false;
 
       const initialWorkspace = new fabric.Rect({
-        width: 1200,
-        height: 900,
+        width: initialWidth.current,
+        height: initialHeight.current,
         name: "clip",
         fill: "white",
         selectable: false,
