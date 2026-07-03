@@ -2,7 +2,7 @@
 
 import { Button } from "@/components/ui/button";
 import { ArrowRight, Sparkles } from "lucide-react";
-import { useCreateProject } from "@/features/projects/use-create-project";
+import { useCreateProject } from "@/features/projects/api/use-create-project";
 import { useRouter } from "next/navigation";
 
 export const Banner = () => {

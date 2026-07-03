@@ -1,5 +1,6 @@
 "use client";
 
+import { ResponseType } from "@/features/projects/api/use-get-project";
 import dynamic from "next/dynamic";
 
 // Forcing CSR in order to avoid missing jsdom runtime error
@@ -8,6 +9,10 @@ const Editor = dynamic(
   { ssr: false },
 );
 
-export const EditorClient = () => {
+interface EditorClientProps {
+  initialData: ResponseType["data"];
+}
+
+export const EditorClient = ({ initialData }: EditorClientProps) => {
   return <Editor />;
 };
