@@ -1,5 +1,7 @@
 "use client";
 
+import debounce from "lodash.debounce";
+import { useUpdateProject } from "@/features/projects/api/use-update-project";
 import { fabric } from "fabric";
 import { useEditor } from "@/features/editor/hooks/use-editor";
 import { useCallback, useEffect, useRef, useState } from "react";
@@ -23,7 +25,6 @@ import { SettingsSidebar } from "./settings-sidebar";
 import { BulkExportSidebar } from "./bulk-export-sidebar";
 import { TemplateSidebar } from "@/features/editor/components/template-sidebar";
 import { ResponseType } from "@/features/projects/api/use-get-project";
-import { useUpdateProject } from "@/features/projects/api/use-update-project";
 
 interface EditorClientProps {
   initialData: ResponseType["data"];
@@ -33,10 +34,9 @@ export const Editor = ({ initialData }: EditorClientProps) => {
   const { mutate } = useUpdateProject(initialData.id);
 
   const debouncedSave = useCallback(
-    (values: { json: string; height: number; width: number }) => {
-      console.log("saving...");
+    debounce((values: { json: string; height: number; width: number }) => {
       mutate(values);
-    },
+    }, 500),
     [mutate],
   );
 
