@@ -14,5 +14,5 @@ interface EditorClientProps {
 }
 
 export const EditorClient = ({ initialData }: EditorClientProps) => {
-  return <Editor />;
+  return <Editor initialData={initialData} />;
 };

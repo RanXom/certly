@@ -22,8 +22,24 @@ import { DrawSidebar } from "./draw-sidebar";
 import { SettingsSidebar } from "./settings-sidebar";
 import { BulkExportSidebar } from "./bulk-export-sidebar";
 import { TemplateSidebar } from "@/features/editor/components/template-sidebar";
+import { ResponseType } from "@/features/projects/api/use-get-project";
+import { useUpdateProject } from "@/features/projects/api/use-update-project";
 
-export const Editor = () => {
+interface EditorClientProps {
+  initialData: ResponseType["data"];
+}
+
+export const Editor = ({ initialData }: EditorClientProps) => {
+  const { mutate } = useUpdateProject(initialData.id);
+
+  const debouncedSave = useCallback(
+    (values: { json: string; height: number; width: number }) => {
+      console.log("saving...");
+      mutate(values);
+    },
+    [mutate],
+  );
+
   const [activeTool, setActiveTool] = useState<ActiveTool>("select");
 
   const onClearSelection = useCallback(() => {
@@ -34,6 +50,7 @@ export const Editor = () => {
 
   const { init, editor } = useEditor({
     clearSelectionCallback: onClearSelection,
+    saveCallback: debouncedSave,
   });
 
   const onChangeActiveTool = useCallback(
