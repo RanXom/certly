@@ -9,6 +9,7 @@ import {
   Loader,
   MoreHorizontal,
   Search,
+  SquarePen,
   TrashIcon,
 } from "lucide-react";
 import { formatDistanceToNow } from "date-fns";
@@ -16,7 +17,9 @@ import { formatDistanceToNow } from "date-fns";
 import { useGetProjects } from "@/features/projects/api/use-get-projects";
 import { useDuplicateProject } from "@/features/projects/api/use-duplicate-project";
 import { useDeleteProject } from "@/features/projects/api/use-delete-project";
+import { useUpdateProjectMutation } from "@/features/projects/api/use-update-project-mutation";
 import { useConfirm } from "@/hooks/use-confirm";
+import { usePrompt } from "@/hooks/use-prompt";
 
 import { Table, TableBody, TableCell, TableRow } from "@/components/ui/table";
 import {
@@ -28,12 +31,18 @@ import {
 import { Button } from "@/components/ui/button";
 
 export const ProjectsSection = () => {
+  const [promptDialog, prompt] = usePrompt(
+    "Rename Project",
+    "Enter a new name for the project",
+  );
   const [ConfirmDialog, confirm] = useConfirm(
     "Are you sure",
     "You are about to delete this project.",
   );
   const duplicateMutation = useDuplicateProject();
   const removeMutation = useDeleteProject();
+  const updateProject = useUpdateProjectMutation();
+
   const router = useRouter();
 
   const onCopy = (id: string) => {
@@ -46,6 +55,19 @@ export const ProjectsSection = () => {
     if (ok) {
       removeMutation.mutate({ id });
     }
+  };
+
+  const handleRename = async (id: string, currentName: string | null) => {
+    const name = await prompt(currentName ?? "");
+
+    if (name === null) return;
+
+    await updateProject.mutateAsync({
+      id,
+      json: {
+        name,
+      },
+    });
   };
 
   const { data, status, fetchNextPage, isFetchingNextPage, hasNextPage } =
@@ -91,6 +113,8 @@ export const ProjectsSection = () => {
   return (
     <div className="space-y-4">
       <ConfirmDialog />
+      {promptDialog}
+
       <h3 className="font-semibold text-lg">Recent Projects</h3>
       <Table>
         <TableBody>
@@ -121,6 +145,14 @@ export const ProjectsSection = () => {
                         </Button>
                       </DropdownMenuTrigger>
                       <DropdownMenuContent>
+                        <DropdownMenuItem
+                          className="h-10 cursor-pointer"
+                          disabled={false}
+                          onClick={() => handleRename(project.id, project.name)}
+                        >
+                          <SquarePen className="size-4 mr-2" />
+                          Rename
+                        </DropdownMenuItem>
                         <DropdownMenuItem
                           className="h-10 cursor-pointer"
                           disabled={duplicateMutation.isPending}
