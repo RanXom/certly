@@ -15,6 +15,7 @@ import { formatDistanceToNow } from "date-fns";
 
 import { useGetProjects } from "@/features/projects/api/use-get-projects";
 import { useDuplicateProject } from "@/features/projects/api/use-duplicate-project";
+import { useDeleteProject } from "@/features/projects/api/use-delete-project";
 
 import { Table, TableBody, TableCell, TableRow } from "@/components/ui/table";
 import {
@@ -27,10 +28,15 @@ import { Button } from "@/components/ui/button";
 
 export const ProjectsSection = () => {
   const duplicateMutation = useDuplicateProject();
+  const removeMutation = useDeleteProject();
   const router = useRouter();
 
   const onCopy = (id: string) => {
     duplicateMutation.mutate({ id });
+  };
+
+  const onDelete = (id: string) => {
+    removeMutation.mutate({ id });
   };
 
   const { data, status, fetchNextPage, isFetchingNextPage, hasNextPage } =
@@ -115,8 +121,8 @@ export const ProjectsSection = () => {
                         </DropdownMenuItem>
                         <DropdownMenuItem
                           className="h-10 cursor-pointer text-destructive focus:bg-red-500 focus:text-white data-[highlighted]:bg-red-500 data-[highlighted]:text-white transition-colors"
-                          disabled={false}
-                          onClick={() => {}}
+                          disabled={removeMutation.isPending}
+                          onClick={() => onDelete(project.id)}
                         >
                           <TrashIcon className="size-4 mr-2 text-current transition-colors" />
                           Delete
