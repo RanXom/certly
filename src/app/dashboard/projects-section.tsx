@@ -2,11 +2,27 @@
 
 import React from "react";
 import { useRouter } from "next/navigation";
-import { AlertTriangle, FileIcon, Loader, Search } from "lucide-react";
+import {
+  AlertTriangle,
+  CopyIcon,
+  FileIcon,
+  Loader,
+  MoreHorizontal,
+  Search,
+  TrashIcon,
+} from "lucide-react";
+import { formatDistanceToNow } from "date-fns";
 
 import { useGetProjects } from "@/features/projects/api/use-get-projects";
 
 import { Table, TableBody, TableCell, TableRow } from "@/components/ui/table";
+import {
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuItem,
+  DropdownMenuTrigger,
+} from "@/components/ui/dropdown-menu";
+import { Button } from "@/components/ui/button";
 
 export const ProjectsSection = () => {
   const router = useRouter();
@@ -71,7 +87,36 @@ export const ProjectsSection = () => {
                     className="hidden md:table-cell cursor-pointer"
                     onClick={() => router.push(`/editor/${project.id}`)}
                   >
-                    {project.updatedAt}
+                    {formatDistanceToNow(project.updatedAt, {
+                      addSuffix: true,
+                    })}
+                  </TableCell>
+                  <TableCell className="flex items-center justify-end">
+                    <DropdownMenu modal={false}>
+                      <DropdownMenuTrigger asChild>
+                        <Button disabled={false} size="icon" variant="ghost">
+                          <MoreHorizontal className="size-4" />
+                        </Button>
+                      </DropdownMenuTrigger>
+                      <DropdownMenuContent>
+                        <DropdownMenuItem
+                          className="h-10 cursor-pointer"
+                          disabled={false}
+                          onClick={() => {}}
+                        >
+                          <CopyIcon className="size-4 mr-2" />
+                          Make a copy
+                        </DropdownMenuItem>
+                        <DropdownMenuItem
+                          className="h-10 cursor-pointer text-destructive focus:bg-red-500 focus:text-white data-[highlighted]:bg-red-500 data-[highlighted]:text-white transition-colors"
+                          disabled={false}
+                          onClick={() => {}}
+                        >
+                          <TrashIcon className="size-4 mr-2 text-current transition-colors" />
+                          Delete
+                        </DropdownMenuItem>
+                      </DropdownMenuContent>
+                    </DropdownMenu>
                   </TableCell>
                 </TableRow>
               ))}
@@ -79,6 +124,17 @@ export const ProjectsSection = () => {
           ))}
         </TableBody>
       </Table>
+      {hasNextPage && (
+        <div className="w-full flex items-center justify-center pt-4">
+          <Button
+            variant="ghost"
+            onClick={() => fetchNextPage()}
+            disabled={isFetchingNextPage}
+          >
+            Load more
+          </Button>
+        </div>
+      )}
     </div>
   );
 };
