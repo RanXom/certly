@@ -36,7 +36,7 @@ const app = new Hono()
           name: `Copy of ${project.name}`,
           json: project.json,
           width: project.width,
-          hieght: project.height,
+          height: project.height,
           userId: auth.token.id,
           createdAt: new Date(),
           updatedAt: new Date(),
