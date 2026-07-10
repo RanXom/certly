@@ -120,7 +120,7 @@ export const ProjectsSection = () => {
                           Make a copy
                         </DropdownMenuItem>
                         <DropdownMenuItem
-                          className="h-10 cursor-pointer text-destructive focus:bg-red-500 focus:text-white data-[highlighted]:bg-red-500 data-[highlighted]:text-white transition-colors"
+                          className="h-10 cursor-pointer text-destructive focus:bg-red-500 focus:text-white data-highlighted:bg-red-500 data-highlighted:text-white transition-colors"
                           disabled={removeMutation.isPending}
                           onClick={() => onDelete(project.id)}
                         >
