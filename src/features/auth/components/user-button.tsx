@@ -27,8 +27,8 @@ export const UserButton = () => {
     return null;
   }
 
-  const name = session.data?.user?.name!;
-  const imageUrl = session.data?.user?.image;
+  const name = session.data?.user?.name ?? "";
+  const imageUrl = session.data?.user?.image ?? "";
 
   return (
     <>
@@ -49,6 +49,7 @@ export const UserButton = () => {
             <User2 className="size-4 mr-2" />
             Profile
           </DropdownMenuItem>
+          {/* TODO: Add a password reset button with it's dialog */}
           <DropdownMenuSeparator />
           <DropdownMenuItem onClick={() => signOut()} className="h-10">
             <LogOut className="size-4 mr-2" />

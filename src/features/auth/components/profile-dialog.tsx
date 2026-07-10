@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useRef } from "react";
+import { useState } from "react";
 import { useSession } from "next-auth/react";
 
 import {
@@ -81,7 +81,10 @@ export const ProfileDialog = ({ open, onOpenChange }: ProfileDialogProps) => {
 
         <div className="space-y-4">
           <div className="space-y-2">
-            <Label htmlFor="profile-name" className="flex items-center gap-2 text-sm font-medium">
+            <Label
+              htmlFor="profile-name"
+              className="flex items-center gap-2 text-sm font-medium"
+            >
               <User2 className="size-4 text-muted-foreground" />
               Name
             </Label>
