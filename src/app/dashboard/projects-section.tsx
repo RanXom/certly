@@ -16,6 +16,7 @@ import { formatDistanceToNow } from "date-fns";
 import { useGetProjects } from "@/features/projects/api/use-get-projects";
 import { useDuplicateProject } from "@/features/projects/api/use-duplicate-project";
 import { useDeleteProject } from "@/features/projects/api/use-delete-project";
+import { useConfirm } from "@/hooks/use-confirm";
 
 import { Table, TableBody, TableCell, TableRow } from "@/components/ui/table";
 import {
@@ -27,6 +28,10 @@ import {
 import { Button } from "@/components/ui/button";
 
 export const ProjectsSection = () => {
+  const [ConfirmDialog, confirm] = useConfirm(
+    "Are you sure",
+    "You are about to delete this project.",
+  );
   const duplicateMutation = useDuplicateProject();
   const removeMutation = useDeleteProject();
   const router = useRouter();
@@ -35,8 +40,12 @@ export const ProjectsSection = () => {
     duplicateMutation.mutate({ id });
   };
 
-  const onDelete = (id: string) => {
-    removeMutation.mutate({ id });
+  const onDelete = async (id: string) => {
+    const ok = await confirm();
+
+    if (ok) {
+      removeMutation.mutate({ id });
+    }
   };
 
   const { data, status, fetchNextPage, isFetchingNextPage, hasNextPage } =
@@ -81,6 +90,7 @@ export const ProjectsSection = () => {
 
   return (
     <div className="space-y-4">
+      <ConfirmDialog />
       <h3 className="font-semibold text-lg">Recent Projects</h3>
       <Table>
         <TableBody>
