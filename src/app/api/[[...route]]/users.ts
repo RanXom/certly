@@ -134,8 +134,8 @@ const app = new Hono()
         password: hashedPassword,
       });
 
-      // Send verification email (fire-and-forget)
-      sendVerificationEmail(email, name).catch(() => {});
+      // Send verification email
+      await sendVerificationEmail(email, name);
 
       return c.json(null, 200);
     },
