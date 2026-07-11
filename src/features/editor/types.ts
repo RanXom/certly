@@ -178,7 +178,15 @@ export const DIAMOND_OPTIONS = {
 };
 
 export interface EditorHookProps {
+  defaultState?: string;
+  defaultWidth?: number;
+  defaultHeight?: number;
   clearSelectionCallback?: () => void;
+  saveCallback?: (values: {
+    json: string;
+    height: number;
+    width: number;
+  }) => void;
 }
 
 export type BuildEditorProps = {
@@ -210,7 +218,14 @@ export interface Editor {
   saveJpg: () => void;
   saveJson: () => void;
   saveBulk: (data: any[], format: "png" | "jpg" | "svg") => Promise<void>;
-  emailBulk: (data: any[], emailColumn: string, senderName: string, subject: string, body: string, format: "png" | "jpg" | "svg") => Promise<{ success: number; failed: number }>;
+  emailBulk: (
+    data: any[],
+    emailColumn: string,
+    senderName: string,
+    subject: string,
+    body: string,
+    format: "png" | "jpg" | "svg",
+  ) => Promise<{ success: number; failed: number; rateLimited: boolean }>;
   loadJson: (json: string) => void;
   onUndo: () => void;
   onRedo: () => void;

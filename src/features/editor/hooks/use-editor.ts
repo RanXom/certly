@@ -1,5 +1,5 @@
 import { fabric } from "fabric";
-import { useCallback, useMemo, useState } from "react";
+import { useCallback, useMemo, useRef, useState } from "react";
 
 import {
   BuildEditorProps,
@@ -34,6 +34,7 @@ import { useHistory } from "@/features/editor/hooks/use-history";
 import { useHotkeys } from "@/features/editor/hooks/use-hotkeys";
 import JSZip from "jszip";
 import { useWindowEvents } from "@/features/editor/hooks/use-window-events";
+import { UseLoadState } from "./use-load-state";
 
 const buildEditor = ({
   save,
@@ -152,7 +153,9 @@ const buildEditor = ({
 
     // Find all text objects that we might need to modify
     const objects = canvas.getObjects();
-    const textObjects = objects.filter((obj) => isTextType(obj.type)) as fabric.Textbox[];
+    const textObjects = objects.filter((obj) =>
+      isTextType(obj.type),
+    ) as fabric.Textbox[];
 
     // Store original texts to restore them later
     const originalTexts = new Map<fabric.Textbox, string>();
@@ -187,13 +190,18 @@ const buildEditor = ({
         const svgStr = canvas.toSVG({
           width,
           height,
-          viewBox: { x: left || 0, y: top || 0, width: width || 0, height: height || 0 },
+          viewBox: {
+            x: left || 0,
+            y: top || 0,
+            width: width || 0,
+            height: height || 0,
+          },
         });
         zip.file(`${i + 1}.svg`, svgStr);
       } else {
         const dataUrl = canvas.toDataURL(exportOptions);
         // Extract base64 part
-        const base64 = dataUrl.split(',')[1];
+        const base64 = dataUrl.split(",")[1];
         zip.file(`${i + 1}.${format}`, base64, { base64: true });
       }
     }
@@ -220,7 +228,14 @@ const buildEditor = ({
     autoZoom();
   };
 
-  const emailBulk = async (data: any[], emailColumn: string, senderName: string, subject: string, body: string, format: "png" | "jpg" | "svg") => {
+  const emailBulk = async (
+    data: any[],
+    emailColumn: string,
+    senderName: string,
+    subject: string,
+    body: string,
+    format: "png" | "jpg" | "svg",
+  ) => {
     canvas.setViewportTransform([1, 0, 0, 1, 0, 0]);
     const { width, height, left, top } = getWorkspace() as fabric.Rect;
 
@@ -235,14 +250,20 @@ const buildEditor = ({
     };
 
     const objects = canvas.getObjects();
-    const textObjects = objects.filter((obj) => isTextType(obj.type)) as fabric.Textbox[];
+    const textObjects = objects.filter((obj) =>
+      isTextType(obj.type),
+    ) as fabric.Textbox[];
 
     const originalTexts = new Map<fabric.Textbox, string>();
     textObjects.forEach((obj) => {
       if (obj.text) originalTexts.set(obj, obj.text);
     });
 
-    const generatedEmails: { emailTo: string, attachmentBase64: string, attachmentName: string }[] = [];
+    const generatedEmails: {
+      emailTo: string;
+      attachmentBase64: string;
+      attachmentName: string;
+    }[] = [];
 
     for (let i = 0; i < data.length; i++) {
       const row = data[i];
@@ -272,12 +293,17 @@ const buildEditor = ({
         const svgStr = canvas.toSVG({
           width,
           height,
-          viewBox: { x: left || 0, y: top || 0, width: width || 0, height: height || 0 },
+          viewBox: {
+            x: left || 0,
+            y: top || 0,
+            width: width || 0,
+            height: height || 0,
+          },
         });
         attachmentBase64 = Buffer.from(svgStr).toString("base64");
       } else {
         const dataUrl = canvas.toDataURL(exportOptions);
-        attachmentBase64 = dataUrl.split(',')[1];
+        attachmentBase64 = dataUrl.split(",")[1];
       }
 
       generatedEmails.push({ emailTo, attachmentBase64, attachmentName });
@@ -294,10 +320,19 @@ const buildEditor = ({
     canvas.renderAll();
     autoZoom();
 
-    // Send Email POSTs asynchronously
+    // Send Email POSTs sequentially
     let success = 0;
     let failed = 0;
-    for (const { emailTo, attachmentBase64, attachmentName } of generatedEmails) {
+    let rateLimited = false;
+    for (const {
+      emailTo,
+      attachmentBase64,
+      attachmentName,
+    } of generatedEmails) {
+      if (rateLimited) {
+        failed++;
+        continue;
+      }
       try {
         const res = await fetch("/api/emails", {
           method: "POST",
@@ -308,17 +343,23 @@ const buildEditor = ({
             subject,
             body,
             attachmentBase64,
-            attachmentName
-          })
+            attachmentName,
+          }),
         });
-        if (res.ok) success++;
-        else failed++;
+        if (res.ok) {
+          success++;
+        } else if (res.status === 429) {
+          rateLimited = true;
+          failed++;
+        } else {
+          failed++;
+        }
       } catch (error) {
         console.error("Bulk Email Error for", emailTo, error);
         failed++;
       }
     }
-    return { success, failed };
+    return { success, failed, rateLimited };
   };
 
   const getWorkspace = () => {
@@ -826,7 +867,17 @@ const buildEditor = ({
   };
 };
 
-export const useEditor = ({ clearSelectionCallback }: EditorHookProps) => {
+export const useEditor = ({
+  defaultState,
+  defaultWidth,
+  defaultHeight,
+  clearSelectionCallback,
+  saveCallback,
+}: EditorHookProps) => {
+  const initialState = useRef(defaultState);
+  const initialWidth = useRef(defaultWidth);
+  const initialHeight = useRef(defaultHeight);
+
   const [canvas, setCanvas] = useState<fabric.Canvas | null>(null);
   const [container, setContainer] = useState<HTMLDivElement | null>(null);
   const [selectedObjects, setSelectedObjects] = useState<fabric.Object[]>([]);
@@ -840,7 +891,11 @@ export const useEditor = ({ clearSelectionCallback }: EditorHookProps) => {
 
   useWindowEvents();
 
-  const { save, canRedo, canUndo, redo, undo } = useHistory({ canvas });
+  const { save, canRedo, canUndo, redo, undo, canvasHistory, setHistoryIndex } =
+    useHistory({
+      canvas,
+      saveCallback,
+    });
 
   const { copy, paste } = useClipboard({ canvas });
 
@@ -862,6 +917,14 @@ export const useEditor = ({ clearSelectionCallback }: EditorHookProps) => {
     paste,
     save,
     canvas,
+  });
+
+  UseLoadState({
+    canvas,
+    autoZoom,
+    initialState,
+    canvasHistory,
+    setHistoryIndex,
   });
 
   const editor = useMemo(() => {
@@ -929,8 +992,8 @@ export const useEditor = ({ clearSelectionCallback }: EditorHookProps) => {
       fabric.Object.prototype.objectCaching = false;
 
       const initialWorkspace = new fabric.Rect({
-        width: 1200,
-        height: 900,
+        width: initialWidth.current,
+        height: initialHeight.current,
         name: "clip",
         fill: "white",
         selectable: false,

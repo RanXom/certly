@@ -21,12 +21,26 @@ const CredentialsSchema = z.object({
 declare module "next-auth/jwt" {
   interface JWT {
     id: string | undefined;
+    emailVerified: Date | null;
   }
 }
 
 declare module "@auth/core/jwt" {
   interface JWT {
     id: string | undefined;
+    emailVerified: Date | null;
+  }
+}
+
+declare module "next-auth" {
+  interface Session {
+    user: {
+      id: string;
+      name: string | null;
+      email: string | null;
+      image: string | null;
+      emailVerified: Date | null;
+    };
   }
 }
 
@@ -98,11 +112,23 @@ export default {
         session.user.image = token.picture;
       }
 
+      session.user.emailVerified = token.emailVerified ?? null;
+
       return session;
     },
     async jwt({ token, user, trigger }) {
       if (user) {
         token.id = user.id;
+
+        // Fetch emailVerified from DB on initial sign-in
+        // (the user object from authorize() doesn't reliably include it in the token)
+        if (user.id) {
+          const [dbUser] = await db
+            .select()
+            .from(users)
+            .where(eq(users.id, user.id));
+          token.emailVerified = dbUser?.emailVerified ?? null;
+        }
       }
 
       if (trigger === "update" && token.id) {
@@ -115,6 +141,7 @@ export default {
           token.name = dbUser.name;
           token.email = dbUser.email;
           token.picture = dbUser.image;
+          token.emailVerified = dbUser.emailVerified;
         }
       }
 
