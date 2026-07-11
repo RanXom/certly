@@ -8,16 +8,17 @@ import {
   DropdownMenu,
   DropdownMenuItem,
   DropdownMenuContent,
-  DropdownMenuSeparator,
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
-import { Loader, LogOut, User2 } from "lucide-react";
+import { Loader, LogOut, RotateCcwKey, User2 } from "lucide-react";
 
 import { ProfileDialog } from "./profile-dialog";
+import { ChangePasswordDialog } from "./change-password-dialog";
 
 export const UserButton = () => {
   const session = useSession();
   const [profileOpen, setProfileOpen] = useState(false);
+  const [changePasswordOpen, setChangePasswordOpen] = useState(false);
 
   if (session.status === "loading") {
     return <Loader className="size-4 animate-spin text-muted-foreground" />;
@@ -49,8 +50,10 @@ export const UserButton = () => {
             <User2 className="size-4 mr-2" />
             Profile
           </DropdownMenuItem>
-          {/* TODO: Add a password reset button with it's dialog */}
-          <DropdownMenuSeparator />
+          <DropdownMenuItem onClick={() => setChangePasswordOpen(true)} className="h-10">
+            <RotateCcwKey className="size-4 mr-2" />
+            Change Password
+          </DropdownMenuItem>
           <DropdownMenuItem onClick={() => signOut()} className="h-10">
             <LogOut className="size-4 mr-2" />
             Sign Out
@@ -59,6 +62,7 @@ export const UserButton = () => {
       </DropdownMenu>
 
       <ProfileDialog open={profileOpen} onOpenChange={setProfileOpen} />
+      <ChangePasswordDialog open={changePasswordOpen} onOpenChange={setChangePasswordOpen} />
     </>
   );
 };
