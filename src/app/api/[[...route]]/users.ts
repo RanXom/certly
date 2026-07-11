@@ -13,34 +13,89 @@ import { and, eq } from "drizzle-orm";
 
 const resend = new Resend(process.env.RESEND_API_KEY || "re_dummy_key");
 
-// --- In-memory rate limiter for forgot-password (per-email) ---
-const FORGOT_PW_LIMIT = 3;
-const FORGOT_PW_WINDOW_MS = 15 * 60 * 1000; // 15 minutes
+// --- Generic in-memory rate limiter ---
+const rateLimitMaps = new Map<string, Map<string, { count: number; resetAt: number }>>();
 
-const forgotPwRateLimitMap = new Map<
-  string,
-  { count: number; resetAt: number }
->();
-
-function checkForgotPasswordRateLimit(email: string): boolean {
+function checkRateLimit(
+  category: string,
+  key: string,
+  limit: number,
+  windowMs: number,
+): boolean {
+  if (!rateLimitMaps.has(category)) {
+    rateLimitMaps.set(category, new Map());
+  }
+  const map = rateLimitMaps.get(category)!;
   const now = Date.now();
-  const key = email.toLowerCase();
-  const entry = forgotPwRateLimitMap.get(key);
+  const normalizedKey = key.toLowerCase();
+  const entry = map.get(normalizedKey);
 
   if (!entry || now >= entry.resetAt) {
-    forgotPwRateLimitMap.set(key, {
-      count: 1,
-      resetAt: now + FORGOT_PW_WINDOW_MS,
-    });
+    map.set(normalizedKey, { count: 1, resetAt: now + windowMs });
     return true;
   }
 
-  if (entry.count >= FORGOT_PW_LIMIT) {
+  if (entry.count >= limit) {
     return false;
   }
 
   entry.count++;
   return true;
+}
+
+const RATE_LIMIT_WINDOW = 15 * 60 * 1000; // 15 minutes
+const RATE_LIMIT_MAX = 3;
+
+// Helper to send a verification email
+async function sendVerificationEmail(
+  email: string,
+  userName: string | null,
+): Promise<void> {
+  const normalizedEmail = email.toLowerCase().trim();
+
+  // Delete any existing verification tokens for this email
+  await db
+    .delete(verificationTokens)
+    .where(eq(verificationTokens.identifier, `verify:${normalizedEmail}`));
+
+  // Generate token
+  const token = crypto.randomBytes(32).toString("hex");
+  const expires = new Date(Date.now() + 24 * 60 * 60 * 1000); // 24 hours
+
+  await db.insert(verificationTokens).values({
+    identifier: `verify:${normalizedEmail}`,
+    token,
+    expires,
+  });
+
+  const appUrl = process.env.NEXT_PUBLIC_APP_URL || "http://localhost:3000";
+  const verifyLink = `${appUrl}/verify-email?token=${token}&email=${encodeURIComponent(normalizedEmail)}`;
+
+  if (!process.env.RESEND_API_KEY) {
+    console.warn(
+      `[Mock Verification Email] To: ${normalizedEmail} | Link: ${verifyLink}`,
+    );
+    return;
+  }
+
+  try {
+    await resend.emails.send({
+      from: "Certly <noreply@certly.studio>",
+      to: [normalizedEmail],
+      subject: "Verify your email — Certly",
+      html: `
+        <div style="font-family: sans-serif; max-width: 480px; margin: 0 auto;">
+          <h2>Verify your email</h2>
+          <p>Hi${userName ? ` ${userName}` : ""},</p>
+          <p>Thanks for signing up for Certly! Please verify your email address by clicking the button below.</p>
+          <a href="${verifyLink}" style="display: inline-block; padding: 12px 24px; background: #2563eb; color: #fff; text-decoration: none; border-radius: 6px; font-weight: 600; margin: 16px 0;">Verify Email</a>
+          <p style="color: #6b7280; font-size: 13px;">This link expires in 24 hours. If you didn't create an account, you can safely ignore this email.</p>
+        </div>
+      `,
+    });
+  } catch (error) {
+    console.error("Failed to send verification email:", error);
+  }
 }
 
 const app = new Hono()
@@ -79,6 +134,9 @@ const app = new Hono()
         password: hashedPassword,
       });
 
+      // Send verification email (fire-and-forget)
+      sendVerificationEmail(email, name).catch(() => {});
+
       return c.json(null, 200);
     },
   )
@@ -97,6 +155,19 @@ const app = new Hono()
 
       if (!auth.token?.id || typeof auth.token.id !== "string") {
         return c.json({ error: "Unauthorized" }, 401);
+      }
+
+      // Check email verification
+      const [currentUser] = await db
+        .select()
+        .from(users)
+        .where(eq(users.id, auth.token.id));
+
+      if (currentUser?.password && !currentUser.emailVerified) {
+        return c.json(
+          { error: "Please verify your email before updating your profile." },
+          403,
+        );
       }
 
       await db
@@ -142,6 +213,14 @@ const app = new Hono()
 
       if (!user) {
         return c.json({ error: "User not found" }, 404);
+      }
+
+      // Check email verification for credential accounts
+      if (user.password && !user.emailVerified) {
+        return c.json(
+          { error: "Please verify your email before changing your password." },
+          403,
+        );
       }
 
       if (!user.password) {
@@ -203,7 +282,7 @@ const app = new Hono()
       };
 
       // Rate limit check
-      if (!checkForgotPasswordRateLimit(normalizedEmail)) {
+      if (!checkRateLimit("forgot-pw", normalizedEmail, RATE_LIMIT_MAX, RATE_LIMIT_WINDOW)) {
         // Still return success to avoid leaking rate-limit info as an enumeration vector
         return c.json(successResponse);
       }
@@ -213,8 +292,8 @@ const app = new Hono()
         .from(users)
         .where(eq(users.email, normalizedEmail));
 
-      // If user doesn't exist or is an OAuth-only account, silently succeed
-      if (!user || !user.password) {
+      // If user doesn't exist, is OAuth-only, or hasn't verified email, silently succeed
+      if (!user || !user.password || !user.emailVerified) {
         return c.json(successResponse);
       }
 
@@ -360,6 +439,141 @@ const app = new Hono()
         );
 
       return c.json({ data: { success: true } });
+    },
+  )
+  .post(
+    "/verify-email",
+    zValidator(
+      "json",
+      z.object({
+        email: z.string().email("Invalid email address"),
+        token: z.string().min(1, "Verification token is required"),
+      }),
+    ),
+    async (c) => {
+      const { email, token } = c.req.valid("json");
+      const normalizedEmail = email.toLowerCase().trim();
+      const identifier = `verify:${normalizedEmail}`;
+
+      // Look up the token
+      const [storedToken] = await db
+        .select()
+        .from(verificationTokens)
+        .where(
+          and(
+            eq(verificationTokens.identifier, identifier),
+            eq(verificationTokens.token, token),
+          ),
+        );
+
+      if (!storedToken) {
+        return c.json(
+          {
+            error:
+              "Invalid or expired verification link. Please request a new one.",
+          },
+          400,
+        );
+      }
+
+      // Check expiry (24 hours)
+      if (new Date() > storedToken.expires) {
+        await db
+          .delete(verificationTokens)
+          .where(
+            and(
+              eq(verificationTokens.identifier, identifier),
+              eq(verificationTokens.token, token),
+            ),
+          );
+        return c.json(
+          {
+            error:
+              "This verification link has expired. Please request a new one.",
+          },
+          400,
+        );
+      }
+
+      // Verify user exists
+      const [user] = await db
+        .select()
+        .from(users)
+        .where(eq(users.email, normalizedEmail));
+
+      if (!user) {
+        return c.json({ error: "User not found." }, 404);
+      }
+
+      // Set emailVerified
+      await db
+        .update(users)
+        .set({ emailVerified: new Date() })
+        .where(eq(users.id, user.id));
+
+      // Delete the used token
+      await db
+        .delete(verificationTokens)
+        .where(
+          and(
+            eq(verificationTokens.identifier, identifier),
+            eq(verificationTokens.token, token),
+          ),
+        );
+
+      return c.json({ data: { success: true } });
+    },
+  )
+  .post(
+    "/resend-verification",
+    verifyAuth(),
+    async (c) => {
+      const auth = c.get("authUser");
+
+      if (!auth.token?.id || typeof auth.token.id !== "string") {
+        return c.json({ error: "Unauthorized" }, 401);
+      }
+
+      // Rate limit by user ID
+      if (
+        !checkRateLimit(
+          "resend-verify",
+          auth.token.id,
+          RATE_LIMIT_MAX,
+          RATE_LIMIT_WINDOW,
+        )
+      ) {
+        return c.json(
+          {
+            error:
+              "Too many verification emails requested. Please try again later.",
+          },
+          429,
+        );
+      }
+
+      const [user] = await db
+        .select()
+        .from(users)
+        .where(eq(users.id, auth.token.id));
+
+      if (!user) {
+        return c.json({ error: "User not found" }, 404);
+      }
+
+      if (user.emailVerified) {
+        return c.json({ error: "Email is already verified" }, 400);
+      }
+
+      if (!user.email) {
+        return c.json({ error: "No email address on account" }, 400);
+      }
+
+      await sendVerificationEmail(user.email, user.name);
+
+      return c.json({
+        data: { message: "Verification email sent" },
+      });
     },
   );
 

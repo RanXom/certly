@@ -16,7 +16,7 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Separator } from "@/components/ui/separator";
-import { Loader, Mail, User2 } from "lucide-react";
+import { Loader, Mail, TriangleAlert, User2 } from "lucide-react";
 
 import { useUpdateUser } from "../hooks/use-update-user";
 
@@ -33,6 +33,7 @@ export const ProfileDialog = ({ open, onOpenChange }: ProfileDialogProps) => {
   const mutation = useUpdateUser();
 
   const user = session.data?.user;
+  const isUnverified = !user?.emailVerified;
   const currentName = overriddenName ?? user?.name ?? "";
   const [name, setName] = useState(currentName);
   const [isEditing, setIsEditing] = useState(false);
@@ -79,6 +80,13 @@ export const ProfileDialog = ({ open, onOpenChange }: ProfileDialogProps) => {
 
         <Separator />
 
+        {isUnverified && (
+          <div className="bg-amber-500/15 p-3 rounded-md flex items-center gap-x-2 text-sm text-amber-700">
+            <TriangleAlert className="size-4 shrink-0" />
+            <p>Verify your email to edit your profile.</p>
+          </div>
+        )}
+
         <div className="space-y-4">
           <div className="space-y-2">
             <Label
@@ -107,6 +115,7 @@ export const ProfileDialog = ({ open, onOpenChange }: ProfileDialogProps) => {
                   size="sm"
                   onClick={() => setIsEditing(true)}
                   className="h-7 text-xs"
+                  disabled={isUnverified}
                 >
                   Edit
                 </Button>

@@ -1,6 +1,7 @@
 "use client";
 
 import { useState } from "react";
+import { useSession } from "next-auth/react";
 
 import {
   Dialog,
@@ -14,7 +15,7 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Separator } from "@/components/ui/separator";
-import { Eye, EyeOff, Loader, ShieldCheck } from "lucide-react";
+import { Eye, EyeOff, Loader, ShieldCheck, TriangleAlert } from "lucide-react";
 
 import { useChangePassword } from "../hooks/use-change-password";
 import Link from "next/link";
@@ -29,6 +30,8 @@ export const ChangePasswordDialog = ({
   onOpenChange,
 }: ChangePasswordDialogProps) => {
   const mutation = useChangePassword();
+  const session = useSession();
+  const isUnverified = !session.data?.user?.emailVerified;
 
   const [currentPassword, setCurrentPassword] = useState("");
   const [newPassword, setNewPassword] = useState("");
@@ -95,6 +98,12 @@ export const ChangePasswordDialog = ({
 
         <Separator />
 
+        {isUnverified ? (
+          <div className="bg-amber-500/15 p-3 rounded-md flex items-center gap-x-2 text-sm text-amber-700">
+            <TriangleAlert className="size-4 shrink-0" />
+            <p>Verify your email before changing your password.</p>
+          </div>
+        ) : (
         <form onSubmit={handleSubmit} className="space-y-4">
           {/* Current Password */}
           <div className="space-y-2">
@@ -237,6 +246,7 @@ export const ChangePasswordDialog = ({
             </Button>
           </DialogFooter>
         </form>
+        )}
       </DialogContent>
     </Dialog>
   );
