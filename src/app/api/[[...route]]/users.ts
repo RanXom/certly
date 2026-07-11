@@ -575,6 +575,160 @@ const app = new Hono()
         data: { message: "Verification email sent" },
       });
     },
+  )
+  .post(
+    "/delete-account",
+    verifyAuth(),
+    async (c) => {
+      const auth = c.get("authUser");
+
+      if (!auth.token?.id || typeof auth.token.id !== "string") {
+        return c.json({ error: "Unauthorized" }, 401);
+      }
+
+      const [user] = await db
+        .select()
+        .from(users)
+        .where(eq(users.id, auth.token.id));
+
+      if (!user) {
+        return c.json({ error: "User not found" }, 404);
+      }
+
+      if (user.password && !user.emailVerified) {
+        return c.json({ error: "Please verify your email first." }, 403);
+      }
+
+      if (!user.email) {
+        return c.json({ error: "No email associated with account." }, 400);
+      }
+
+      const normalizedEmail = user.email.toLowerCase().trim();
+
+      // Rate limit check
+      if (!checkRateLimit("delete-account", normalizedEmail, RATE_LIMIT_MAX, RATE_LIMIT_WINDOW)) {
+        return c.json({ error: "Too many requests. Please try again later." }, 429);
+      }
+
+      // Delete any existing tokens for this email
+      await db
+        .delete(verificationTokens)
+        .where(eq(verificationTokens.identifier, `delete:${normalizedEmail}`));
+
+      // Generate a cryptographically secure token (256 bits)
+      const token = crypto.randomBytes(32).toString("hex");
+      const expires = new Date(Date.now() + 15 * 60 * 1000); // 15 minutes
+
+      await db.insert(verificationTokens).values({
+        identifier: `delete:${normalizedEmail}`,
+        token,
+        expires,
+      });
+
+      // Build delete link
+      const appUrl = process.env.NEXT_PUBLIC_APP_URL || "http://localhost:3000";
+      const deleteLink = `${appUrl}/delete-account?token=${token}&email=${encodeURIComponent(normalizedEmail)}`;
+
+      if (!process.env.RESEND_API_KEY) {
+        console.warn(
+          `[Mock Delete Account Email] To: ${normalizedEmail} | Link: ${deleteLink}`,
+        );
+        return c.json({ data: { success: true } });
+      }
+
+      try {
+        await resend.emails.send({
+          from: "Certly <noreply@certly.studio>",
+          to: [normalizedEmail],
+          subject: "Confirm Account Deletion — Certly",
+          html: `
+            <div style="font-family: sans-serif; max-width: 480px; margin: 0 auto;">
+              <h2 style="color: #dc2626;">Confirm Account Deletion</h2>
+              <p>We received a request to permanently delete your Certly account.</p>
+              <p><strong>Warning: This action is irreversible. All of your projects and data will be permanently lost.</strong></p>
+              <p>If you are sure you want to delete your account, click the button below:</p>
+              <a href="${deleteLink}" style="display: inline-block; padding: 12px 24px; background: #dc2626; color: #fff; text-decoration: none; border-radius: 6px; font-weight: 600; margin: 16px 0;">Yes, Delete My Account</a>
+              <p style="color: #6b7280; font-size: 13px;">This link expires in 15 minutes. If you didn't request this, you can safely ignore this email.</p>
+            </div>
+          `,
+        });
+      } catch (error) {
+        console.error("Failed to send delete account email:", error);
+      }
+
+      return c.json({ data: { success: true } });
+    }
+  )
+  .post(
+    "/confirm-delete-account",
+    zValidator(
+      "json",
+      z.object({
+        email: z.string().email("Invalid email address"),
+        token: z.string().min(1, "Token is required"),
+      }),
+    ),
+    async (c) => {
+      const { email, token } = c.req.valid("json");
+      const normalizedEmail = email.toLowerCase().trim();
+      const identifier = `delete:${normalizedEmail}`;
+
+      // Look up the token
+      const [storedToken] = await db
+        .select()
+        .from(verificationTokens)
+        .where(
+          and(
+            eq(verificationTokens.identifier, identifier),
+            eq(verificationTokens.token, token),
+          ),
+        );
+
+      if (!storedToken) {
+        return c.json(
+          { error: "Invalid or expired deletion link. Please request a new one." },
+          400,
+        );
+      }
+
+      // Check expiry
+      if (new Date() > storedToken.expires) {
+        // Clean up expired token
+        await db
+          .delete(verificationTokens)
+          .where(
+            and(
+              eq(verificationTokens.identifier, identifier),
+              eq(verificationTokens.token, token),
+            ),
+          );
+        return c.json(
+          {
+            error:
+              "This deletion link has expired. Please request a new one.",
+          },
+          400,
+        );
+      }
+
+      // Delete the used token
+      await db
+        .delete(verificationTokens)
+        .where(
+          and(
+            eq(verificationTokens.identifier, identifier),
+            eq(verificationTokens.token, token),
+          ),
+        );
+
+      // Verify user exists and delete
+      // Cascade will take care of everything else (projects, sessions, accounts)
+      await db
+        .delete(users)
+        .where(eq(users.email, normalizedEmail));
+
+      return c.json({ data: { success: true } });
+    }
   );
 
 export default app;

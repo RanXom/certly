@@ -16,9 +16,10 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Separator } from "@/components/ui/separator";
-import { Loader, Mail, TriangleAlert, User2 } from "lucide-react";
+import { Loader, Mail, TriangleAlert, User2, Trash2 } from "lucide-react";
 
 import { useUpdateUser } from "../hooks/use-update-user";
+import { useRequestDeleteAccount } from "../hooks/use-request-delete-account";
 
 // Persists across re-mounts caused by parent re-renders
 let overriddenName: string | null = null;
@@ -31,12 +32,14 @@ interface ProfileDialogProps {
 export const ProfileDialog = ({ open, onOpenChange }: ProfileDialogProps) => {
   const session = useSession();
   const mutation = useUpdateUser();
+  const deleteMutation = useRequestDeleteAccount();
 
   const user = session.data?.user;
   const isUnverified = !user?.emailVerified;
   const currentName = overriddenName ?? user?.name ?? "";
   const [name, setName] = useState(currentName);
   const [isEditing, setIsEditing] = useState(false);
+  const [isConfirmingDelete, setIsConfirmingDelete] = useState(false);
 
   const handleSave = () => {
     if (!name.trim()) return;
@@ -55,6 +58,15 @@ export const ProfileDialog = ({ open, onOpenChange }: ProfileDialogProps) => {
   const handleCancel = () => {
     setName(currentName);
     setIsEditing(false);
+    setIsConfirmingDelete(false);
+  };
+
+  const handleDeleteRequest = () => {
+    deleteMutation.mutate(undefined, {
+      onSuccess: () => {
+        setIsConfirmingDelete(false);
+      },
+    });
   };
 
   if (!user) return null;
@@ -133,6 +145,72 @@ export const ProfileDialog = ({ open, onOpenChange }: ProfileDialogProps) => {
                 {user.email || "Not set"}
               </span>
             </div>
+          </div>
+        </div>
+
+        <Separator />
+
+        {/* Danger Zone */}
+        <div className="space-y-3">
+          <Label className="flex items-center gap-2 text-sm font-medium text-destructive">
+            <Trash2 className="size-4" />
+            Danger Zone
+          </Label>
+          <div className="flex flex-col gap-2 rounded-md border border-destructive/20 p-4">
+            <div className="flex flex-col gap-1">
+              <span className="text-sm font-medium">Delete Account</span>
+              <span className="text-xs text-muted-foreground">
+                Permanently delete your account and all associated projects. This
+                action cannot be undone.
+              </span>
+            </div>
+            
+            {isConfirmingDelete ? (
+              <div className="flex flex-col gap-2 mt-2">
+                <span className="text-xs font-medium text-destructive">
+                  Are you absolutely sure? An email will be sent to confirm.
+                </span>
+                <div className="flex gap-2">
+                  <Button
+                    variant="outline"
+                    size="sm"
+                    className="flex-1"
+                    onClick={() => setIsConfirmingDelete(false)}
+                    disabled={deleteMutation.isPending}
+                  >
+                    Cancel
+                  </Button>
+                  <Button
+                    variant="destructive"
+                    size="sm"
+                    className="flex-1"
+                    onClick={handleDeleteRequest}
+                    disabled={deleteMutation.isPending}
+                  >
+                    {deleteMutation.isPending ? (
+                      <Loader className="size-4 animate-spin mr-2" />
+                    ) : null}
+                    Yes, Delete
+                  </Button>
+                </div>
+              </div>
+            ) : (
+              <Button
+                variant="destructive"
+                size="sm"
+                className="w-fit mt-2"
+                onClick={() => setIsConfirmingDelete(true)}
+                disabled={isUnverified || isEditing}
+              >
+                Delete Account
+              </Button>
+            )}
+            
+            {isUnverified && !isConfirmingDelete && (
+              <span className="text-xs text-amber-600 mt-1">
+                You must verify your email before you can delete your account.
+              </span>
+            )}
           </div>
         </div>
 
