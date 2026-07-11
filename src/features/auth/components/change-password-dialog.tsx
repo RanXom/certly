@@ -103,7 +103,7 @@ export const ChangePasswordDialog = ({
               className="flex items-center justify-between gap-2 text-sm font-medium"
             >
               Current Password
-              <Link href="/">
+              <Link href="/forgot-password" onClick={() => onOpenChange(false)}>
                 <span className="text-muted-foreground text-sm hover:underline">
                   Forgot password?
                 </span>
@@ -220,7 +220,7 @@ export const ChangePasswordDialog = ({
             )}
           </div>
 
-          <DialogFooter className="gap-2 sm:gap-0 pt-2">
+          <DialogFooter className="gap-2 md:gap-2 pt-2">
             <Button
               type="button"
               variant="outline"
